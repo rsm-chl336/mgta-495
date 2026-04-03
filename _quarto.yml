@@ -1,0 +1,22 @@
+project:
+  type: website
+  output-dir: docs
+
+website:
+  title: "Oliver's Website"
+  navbar:
+    left:
+      - href: index.qmd
+        text: About me
+      - href: resume.qmd
+        text: Resume
+      - href: projects.qmd
+        text: Projects
+      - href: hobbies.qmd
+        text: Hobbies
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
