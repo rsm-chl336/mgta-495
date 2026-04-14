@@ -14,10 +14,87 @@
     "text": "Welcome to my website!\nI am a student at UCSD majored in MSBA and interested in data science, technology, and building projects. This website is created using Quarto as part of my coursework."
   },
   {
+    "objectID": "projects/project1/hw1_questions.html",
+    "href": "projects/project1/hw1_questions.html",
+    "title": "A/B Testing a Call to Action",
+    "section": "",
+    "text": "On my website’s homepage, I invite visitors to sign up for a newsletter. However, I am unsure which wording is more effective at encouraging users to subscribe.\nTo answer this question, I compare two different calls to action (CTAs):\n\nCTA A: “Sign up for our newsletter here!”\nCTA B: “Stay up to date by signing up!”\n\nTo determine which version performs better, I run an A/B test. In an A/B test, visitors are randomly assigned to one of two groups. Each group sees a different version of the CTA, and we compare their sign-up rates.\nBy analyzing the difference in performance between the two groups, we can make data-driven decisions about which CTA is more effective."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#introduction",
+    "href": "projects/project1/hw1_questions.html#introduction",
+    "title": "A/B Testing a Call to Action",
+    "section": "",
+    "text": "On my website’s homepage, I invite visitors to sign up for a newsletter. However, I am unsure which wording is more effective at encouraging users to subscribe.\nTo answer this question, I compare two different calls to action (CTAs):\n\nCTA A: “Sign up for our newsletter here!”\nCTA B: “Stay up to date by signing up!”\n\nTo determine which version performs better, I run an A/B test. In an A/B test, visitors are randomly assigned to one of two groups. Each group sees a different version of the CTA, and we compare their sign-up rates.\nBy analyzing the difference in performance between the two groups, we can make data-driven decisions about which CTA is more effective."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#the-ab-test-as-a-statistical-problem",
+    "href": "projects/project1/hw1_questions.html#the-ab-test-as-a-statistical-problem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The A/B Test as a Statistical Problem",
+    "text": "The A/B Test as a Statistical Problem\nEach visitor either signs up or does not sign up, so their outcome can be modeled as a Bernoulli random variable. Let \\(\\pi\\) denote the probability of signing up.\nBecause the CTA may influence behavior, we allow different probabilities for each group:\n\n\\(\\pi_A\\): probability of signing up under CTA A\n\\(\\pi_B\\): probability of signing up under CTA B\n\nThe key quantity of interest is the difference in conversion rates:\n\\[\n\\theta = \\pi_A - \\pi_B\n\\]\nWe estimate this using the difference in sample means:\n\\[\n\\hat\\theta = \\bar{X}_A - \\bar{X}_B\n\\]\nSince each observation is either 0 or 1, the sample mean is simply the proportion of users who signed up. Therefore:\n\n\\(\\bar{X}_A = \\hat{\\pi}_A\\)\n\\(\\bar{X}_B = \\hat{\\pi}_B\\)\n\nSo \\(\\hat\\theta\\) represents the observed difference in sign-up rates between the two CTAs."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#simulating-data",
+    "href": "projects/project1/hw1_questions.html#simulating-data",
+    "title": "A/B Testing a Call to Action",
+    "section": "Simulating Data",
+    "text": "Simulating Data\nIn real-world settings, we do not know the true probabilities \\(\\pi_A\\) and \\(\\pi_B\\). However, for this exercise, we set them manually to study how our estimator behaves when the truth is known.\nSuppose:\n\n\\(\\pi_A = 0.22\\)\n\\(\\pi_B = 0.18\\)\n\nSo the true difference is \\(\\theta = 0.04\\).\nWe simulate 1,000 visitors for each group.\n\nimport numpy as np\nimport matplotlib.pyplot as plt\nimport pandas as pd\nimport statsmodels.api as sm\nfrom scipy.stats import norm\n\nnp.random.seed(42)\n\nn = 1000\npi_A = 0.22\npi_B = 0.18\n\nA = np.random.binomial(1, pi_A, n)\nB = np.random.binomial(1, pi_B, n)\n\ntheta_hat = A.mean() - B.mean()\ntheta_hat\n\nnp.float64(0.038000000000000006)\n\n\nThe estimated difference in conversion rates from this simulated experiment is shown above. Because the data are simulated, this estimate will vary slightly from run to run, but it should be reasonably close to the true value of 0.04."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#the-law-of-large-numbers",
+    "href": "projects/project1/hw1_questions.html#the-law-of-large-numbers",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Law of Large Numbers",
+    "text": "The Law of Large Numbers\nThe Law of Large Numbers states that as the sample size increases, the sample mean converges to the true population mean.\nIn our case, this means that our estimator \\(\\hat\\theta\\) should get closer to the true value \\(\\theta = 0.04\\) as we include more observations.\n\ndiff = A - B\nrunning_mean = np.cumsum(diff) / np.arange(1, n + 1)\n\nplt.figure(figsize=(8, 5))\nplt.plot(running_mean)\nplt.axhline(0.04, linestyle='--')\nplt.xlabel(\"Number of observations\")\nplt.ylabel(\"Running estimate of θ\")\nplt.title(\"Law of Large Numbers in Action\")\nplt.show()\n\n\n\n\n\n\n\n\nAt the beginning, the estimate fluctuates substantially because the sample is still small. As more observations accumulate, the estimate stabilizes and moves closer to the true value of 0.04. This is exactly what the Law of Large Numbers predicts."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#bootstrap-standard-errors",
+    "href": "projects/project1/hw1_questions.html#bootstrap-standard-errors",
+    "title": "A/B Testing a Call to Action",
+    "section": "Bootstrap Standard Errors",
+    "text": "Bootstrap Standard Errors\nPoint estimates are useful, but they do not tell us how much uncertainty is attached to the estimate. To measure this uncertainty, we can use the bootstrap.\nThe bootstrap repeatedly resamples from the observed data and recalculates the statistic of interest. The spread of those bootstrap estimates gives us an estimate of the standard error.\n\nboot_estimates = []\n\nfor _ in range(1000):\n    A_star = np.random.choice(A, size=n, replace=True)\n    B_star = np.random.choice(B, size=n, replace=True)\n    boot_estimates.append(A_star.mean() - B_star.mean())\n\nboot_se = np.std(boot_estimates)\nboot_se\n\nnp.float64(0.017650398749036806)\n\n\nFor comparison, we can also compute the analytical standard error using the estimated Bernoulli variances.\n\npiA_hat = A.mean()\npiB_hat = B.mean()\n\nse_analytical = np.sqrt(\n    piA_hat * (1 - piA_hat) / n +\n    piB_hat * (1 - piB_hat) / n\n)\n\nse_analytical\n\nnp.float64(0.017766823013696063)\n\n\nThe bootstrap standard error is very close to the analytical standard error, which gives us confidence that the bootstrap is working well in this setting.\nUsing the bootstrap standard error, we can construct a 95% confidence interval:\n\\[\n\\hat\\theta \\pm 1.96 \\times SE\n\\]\n\nlower = theta_hat - 1.96 * boot_se\nupper = theta_hat + 1.96 * boot_se\n(lower, upper)\n\n(np.float64(0.003405218451887869), np.float64(0.07259478154811214))\n\n\nThis interval gives a range of plausible values for the true difference in conversion rates between the two CTAs."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#the-central-limit-theorem",
+    "href": "projects/project1/hw1_questions.html#the-central-limit-theorem",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Central Limit Theorem",
+    "text": "The Central Limit Theorem\nThe Central Limit Theorem states that as the sample size grows, the sampling distribution of the sample mean becomes approximately normal.\nTo illustrate this, I repeatedly simulate the A/B test at several different sample sizes and plot the resulting sampling distributions of \\(\\hat\\theta\\).\n\ndef simulate_theta(sample_size):\n    results = []\n    for _ in range(1000):\n        A_sim = np.random.binomial(1, pi_A, sample_size)\n        B_sim = np.random.binomial(1, pi_B, sample_size)\n        results.append(A_sim.mean() - B_sim.mean())\n    return results\n\nsizes = [25, 50, 100, 500]\n\nfig, axes = plt.subplots(2, 2, figsize=(10, 8))\n\nfor ax, s in zip(axes.flatten(), sizes):\n    vals = simulate_theta(s)\n    ax.hist(vals, bins=30)\n    ax.set_title(f\"n = {s}\")\n    ax.set_xlabel(\"Estimated difference\")\n    ax.set_ylabel(\"Frequency\")\n\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nWhen the sample size is small, the sampling distribution is rough and less symmetric. As the sample size increases, the distribution becomes smoother and more bell-shaped. This illustrates the Central Limit Theorem in practice."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#hypothesis-testing",
+    "href": "projects/project1/hw1_questions.html#hypothesis-testing",
+    "title": "A/B Testing a Call to Action",
+    "section": "Hypothesis Testing",
+    "text": "Hypothesis Testing\nWe now test whether the two CTAs perform differently.\nThe hypotheses are:\n\n\\(H_0: \\theta = 0\\)\n\\(H_1: \\theta \\neq 0\\)\n\nWe compute the test statistic\n\\[\nz = \\frac{\\hat\\theta}{SE}\n\\]\nusing the analytical standard error.\n\nz = theta_hat / se_analytical\nz\n\nnp.float64(2.1388179513414762)\n\n\n\np_value = 2 * (1 - norm.cdf(abs(z)))\np_value\n\nnp.float64(0.032450415036087366)\n\n\nIf the p-value is less than 0.05, we reject the null hypothesis and conclude that the two CTAs differ in performance.\nIn this simulated example, the p-value is small enough to suggest evidence against the null hypothesis. That implies CTA A performs better than CTA B in this experiment."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#the-t-test-as-a-regression",
+    "href": "projects/project1/hw1_questions.html#the-t-test-as-a-regression",
+    "title": "A/B Testing a Call to Action",
+    "section": "The T-Test as a Regression",
+    "text": "The T-Test as a Regression\nA useful insight from statistics is that the difference-in-means test can also be written as a regression model:\n\\[\nY_i = \\beta_0 + \\beta_1 D_i + \\varepsilon_i\n\\]\nwhere:\n\n\\(Y_i\\) is whether visitor \\(i\\) signed up,\n\\(D_i = 1\\) if the visitor saw CTA A,\n\\(D_i = 0\\) if the visitor saw CTA B.\n\nIn this setup, \\(\\beta_1\\) captures the difference in average outcomes between the two groups.\n\nY = np.concatenate([A, B])\nD = np.concatenate([np.ones(n), np.zeros(n)])\n\ndf = pd.DataFrame({\"Y\": Y, \"D\": D})\n\nX = sm.add_constant(df[\"D\"])\nmodel = sm.OLS(df[\"Y\"], X).fit()\n\nmodel.params\n\nconst    0.178\nD        0.038\ndtype: float64\n\n\n\nmodel.bse\n\nconst    0.012569\nD        0.017776\ndtype: float64\n\n\n\nmodel.pvalues\n\nconst    1.865099e-43\nD        3.265822e-02\ndtype: float64\n\n\nThe regression coefficient on D is the same difference in means we calculated earlier. This shows that a simple A/B test can be analyzed as a regression problem, which is especially useful when researchers later want to add controls or extend the model."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#the-problem-with-peeking",
+    "href": "projects/project1/hw1_questions.html#the-problem-with-peeking",
+    "title": "A/B Testing a Call to Action",
+    "section": "The Problem with Peeking",
+    "text": "The Problem with Peeking\nA common mistake in experimentation is peeking: repeatedly checking results during data collection and stopping the experiment as soon as significance appears.\nThis practice is dangerous because it increases the probability of false positives.\nTo show this, I simulate a setting where the null hypothesis is actually true:\n\\[\n\\pi_A = \\pi_B = 0.20\n\\]\nThen I check significance every 100 observations and record whether the experiment ever produces a p-value below 0.05.\n\ndef one_experiment():\n    A_null = np.random.binomial(1, 0.20, 1000)\n    B_null = np.random.binomial(1, 0.20, 1000)\n\n    for k in range(100, 1001, 100):\n        A_k = A_null[:k]\n        B_k = B_null[:k]\n\n        theta_k = A_k.mean() - B_k.mean()\n        se_k = np.sqrt(\n            A_k.mean() * (1 - A_k.mean()) / k +\n            B_k.mean() * (1 - B_k.mean()) / k\n        )\n\n        if se_k == 0:\n            continue\n\n        z_k = theta_k / se_k\n        p_k = 2 * (1 - norm.cdf(abs(z_k)))\n\n        if p_k &lt; 0.05:\n            return 1\n    return 0\n\nresults = [one_experiment() for _ in range(1000)]\nnp.mean(results)\n\nnp.float64(0.205)\n\n\nThe proportion shown above is the false positive rate under repeated peeking. It is typically well above 5%, even though the null hypothesis is true. This demonstrates why experiments should have pre-specified stopping rules rather than being monitored continuously without adjustment."
+  },
+  {
+    "objectID": "projects/project1/hw1_questions.html#conclusion",
+    "href": "projects/project1/hw1_questions.html#conclusion",
+    "title": "A/B Testing a Call to Action",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis simulation-based A/B testing exercise illustrates several core ideas from classical frequentist statistics.\nFirst, the Law of Large Numbers shows that our estimator becomes more stable as sample size increases. Second, the bootstrap provides a practical way to estimate uncertainty. Third, the Central Limit Theorem explains why normal-based inference becomes reasonable in large samples. Fourth, hypothesis testing gives us a formal method for evaluating whether observed differences are likely due to chance. Finally, the peeking example highlights why good experimental design matters just as much as the statistical test itself.\nOverall, this example shows how simulation can make abstract statistical ideas much more concrete and intuitive."
+  },
+  {
     "objectID": "projects.html",
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "No matching items"
+    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
   }
 ]
