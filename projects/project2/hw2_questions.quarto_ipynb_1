@@ -1,0 +1,81 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Replication of Author1 and Author2 (year)\"\n",
+        "subtitle: \"The title of the paper you're replicating\"\n",
+        "author: \"Your Name\"\n",
+        "date: today\n",
+        "---\n",
+        "\n",
+        "\n",
+        "## Introduction\n",
+        "\n",
+        "add\n",
+        "\n",
+        "## Main Analysis"
+      ],
+      "id": "389760c2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "\n",
+        "path = \"C:\\\\Users\\\\Oliver\\\\Desktop\\\\MGTA_495\\\\files\\\\njmin\\\\public.dat\"\n",
+        "\n",
+        "df = pd.read_csv(\n",
+        "    path,\n",
+        "    sep=r\"\\s+\",\n",
+        "    header=None,\n",
+        "    engine=\"python\"\n",
+        ")\n",
+        "\n",
+        "df.head()"
+      ],
+      "id": "0c4636f0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "with open(\n",
+        "    \"C:/Users/Oliver/Desktop/MGTA_495/files/njmin/codebook\",\n",
+        "    \"r\",\n",
+        "    encoding=\"utf-8\",\n",
+        "    errors=\"ignore\"\n",
+        ") as f:\n",
+        "    print(f.read())"
+      ],
+      "id": "6b548861",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Something Additional\n",
+        "\n",
+        "add"
+      ],
+      "id": "b0f8f251"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\Oliver\\AppData\\Roaming\\Python\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

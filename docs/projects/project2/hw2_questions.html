@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Chengxu Liu">
+<meta name="dcterms.date" content="2026-04-21">
 
-<title>index – Chengxu Liu's Website</title>
+<title>Replication of Card and Krueger (1994) – Chengxu Liu’s Website</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -26,7 +28,7 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -70,6 +72,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 <link rel="stylesheet" href="../../styles.css">
@@ -119,17 +124,215 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#main-analysis" id="toc-main-analysis" class="nav-link" data-scroll-target="#main-analysis">Main Analysis</a>
+  <ul class="collapse">
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">Data Preparation</a></li>
+  </ul></li>
+  <li><a href="#replication-of-summary-statistics" id="toc-replication-of-summary-statistics" class="nav-link" data-scroll-target="#replication-of-summary-statistics">Replication of Summary Statistics</a></li>
+  <li><a href="#difference-in-differences-estimate" id="toc-difference-in-differences-estimate" class="nav-link" data-scroll-target="#difference-in-differences-estimate">Difference-in-Differences Estimate</a></li>
+  <li><a href="#regression-replication-table-4-column-i" id="toc-regression-replication-table-4-column-i" class="nav-link" data-scroll-target="#regression-replication-table-4-column-i">Regression Replication (Table 4 Column i)</a></li>
+  <li><a href="#something-additional" id="toc-something-additional" class="nav-link" data-scroll-target="#something-additional">Something Additional</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Replication of Card and Krueger (1994)</h1>
+<p class="subtitle lead">Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania</p>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Chengxu Liu </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">April 21, 2026</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
 
 
+</header>
 
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>In April 1992, New Jersey increased its minimum wage from $4.25 to $5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.</p>
+<p>The authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural <strong>difference-in-differences (DID)</strong> research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.</p>
+<p>The goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset.</p>
+</section>
+<section id="main-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="main-analysis">Main Analysis</h2>
+<section id="data-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="data-preparation">Data Preparation</h3>
+<p>Following the original paper, full-time equivalent employment (FTE) is defined as:</p>
+<p>FTE=Full-time workers+Managers+0.5×Part-time workers</p>
+<p>This measure converts part-time workers into half of a full-time worker.</p>
+</section>
+</section>
+<section id="replication-of-summary-statistics" class="level2">
+<h2 class="anchored" data-anchor-id="replication-of-summary-statistics">Replication of Summary Statistics</h2>
+<div id="9f99cc59" class="cell" data-execution_count="2">
+<div class="cell-output cell-output-display" data-execution_count="2">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">NJ Before</th>
+<th data-quarto-table-cell-role="th">PA Before</th>
+<th data-quarto-table-cell-role="th">NJ After</th>
+<th data-quarto-table-cell-role="th">PA After</th>
+<th data-quarto-table-cell-role="th">NJ Wage Before</th>
+<th data-quarto-table-cell-role="th">PA Wage Before</th>
+<th data-quarto-table-cell-role="th">NJ Wage After</th>
+<th data-quarto-table-cell-role="th">PA Wage After</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>20.439</td>
+<td>23.331</td>
+<td>20.896</td>
+<td>21.166</td>
+<td>4.612</td>
+<td>4.63</td>
+<td>5.081</td>
+<td>4.617</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The summary statistics closely match the original paper. Average starting wages rose sharply in New Jersey after the policy change, while wages in Pennsylvania remained relatively stable.</p>
+</section>
+<section id="difference-in-differences-estimate" class="level2">
+<h2 class="anchored" data-anchor-id="difference-in-differences-estimate">Difference-in-Differences Estimate</h2>
+<div id="946c2d15" class="cell" data-execution_count="3">
+<div class="cell-output cell-output-display" data-execution_count="3">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Group</th>
+<th data-quarto-table-cell-role="th">Before</th>
+<th data-quarto-table-cell-role="th">After</th>
+<th data-quarto-table-cell-role="th">Change</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>New Jersey</td>
+<td>20.439</td>
+<td>20.896</td>
+<td>0.457</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>Pennsylvania</td>
+<td>23.331</td>
+<td>21.166</td>
+<td>-2.166</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="32a99ff2" class="cell" data-execution_count="4">
+<div class="cell-output cell-output-stdout">
+<pre><code>Difference-in-Differences Estimate: 2.623</code></pre>
+</div>
+</div>
+<p>Employment in New Jersey increased slightly, while employment in Pennsylvania declined. The DID estimate is positive, indicating that employment growth in New Jersey exceeded that of Pennsylvania after the minimum wage increase.</p>
+<p>This result is consistent with Card and Krueger’s main conclusion: there is no evidence that the minimum wage increase reduced employment.</p>
+</section>
+<section id="regression-replication-table-4-column-i" class="level2">
+<h2 class="anchored" data-anchor-id="regression-replication-table-4-column-i">Regression Replication (Table 4 Column i)</h2>
+<div id="23595cde" class="cell" data-execution_count="5">
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">Coefficient</th>
+<th data-quarto-table-cell-role="th">Std. Error</th>
+<th data-quarto-table-cell-role="th">P-value</th>
+<th data-quarto-table-cell-role="th">Observations</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2.646</td>
+<td>1.161</td>
+<td>0.023</td>
+<td>386</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The coefficient on the New Jersey indicator measures the relative employment change in New Jersey compared with Pennsylvania. The estimated coefficient is positive and statistically significant, closely matching the published paper.</p>
+</section>
+<section id="something-additional" class="level2">
+<h2 class="anchored" data-anchor-id="something-additional">Something Additional</h2>
+<div id="bbd92998" class="cell" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw2_questions_files/figure-html/cell-7-output-1.png" width="758" height="470" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The figure provides a clear visual interpretation of the difference-in-differences method. Pennsylvania experienced a notable decline in employment, while New Jersey employment remained stable or increased slightly. The treatment effect is captured by the difference in these changes rather than the initial difference in employment levels.</p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This replication broadly confirms the main findings of Card and Krueger (1994). Using the publicly available dataset, I find no evidence that the 1992 New Jersey minimum wage increase reduced fast-food employment. Instead, employment growth in New Jersey exceeded that of the control group in Pennsylvania.</p>
+<p>These findings remain important in modern labor economics because they demonstrate that the employment effects of minimum wages may differ from the simple competitive model.</p>
+<p>Because the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets.</p>
+
+
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

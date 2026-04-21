@@ -1,0 +1,458 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: A/B Testing a Call to Action\n",
+        "subtitle: \"Simulating Key Ideas from Classical Frequentist Statistics\"\n",
+        "author: \"Chengxu Liu\"\n",
+        "date: 2026-04-13\n",
+        "jupyter: python3\n",
+        "format:\n",
+        "  html:\n",
+        "    toc: true\n",
+        "    number-sections: false\n",
+        "    code-fold: false\n",
+        "---\n",
+        "\n",
+        "## Introduction\n",
+        "\n",
+        "On my website’s homepage, I invite visitors to sign up for a newsletter. However, I am unsure which wording is more effective at encouraging users to subscribe.\n",
+        "\n",
+        "To answer this question, I compare two different calls to action (CTAs):\n",
+        "\n",
+        "- CTA A: “Sign up for our newsletter here!”\n",
+        "- CTA B: “Stay up to date by signing up!”\n",
+        "\n",
+        "To determine which version performs better, I run an A/B test. In an A/B test, visitors are randomly assigned to one of two groups. Each group sees a different version of the CTA, and we compare their sign-up rates.\n",
+        "\n",
+        "By analyzing the difference in performance between the two groups, we can make data-driven decisions about which CTA is more effective.\n",
+        "\n",
+        "## The A/B Test as a Statistical Problem\n",
+        "\n",
+        "Each visitor either signs up or does not sign up, so their outcome can be modeled as a Bernoulli random variable. Let $\\pi$ denote the probability of signing up.\n",
+        "\n",
+        "Because the CTA may influence behavior, we allow different probabilities for each group:\n",
+        "\n",
+        "- $\\pi_A$: probability of signing up under CTA A\n",
+        "- $\\pi_B$: probability of signing up under CTA B\n",
+        "\n",
+        "The key quantity of interest is the difference in conversion rates:\n",
+        "\n",
+        "$$\n",
+        "\\theta = \\pi_A - \\pi_B\n",
+        "$$\n",
+        "\n",
+        "We estimate this using the difference in sample means:\n",
+        "\n",
+        "$$\n",
+        "\\hat\\theta = \\bar{X}_A - \\bar{X}_B\n",
+        "$$\n",
+        "\n",
+        "Since each observation is either 0 or 1, the sample mean is simply the proportion of users who signed up. Therefore:\n",
+        "\n",
+        "- $\\bar{X}_A = \\hat{\\pi}_A$\n",
+        "- $\\bar{X}_B = \\hat{\\pi}_B$\n",
+        "\n",
+        "So $\\hat\\theta$ represents the observed difference in sign-up rates between the two CTAs.\n",
+        "\n",
+        "## Simulating Data\n",
+        "\n",
+        "In real-world settings, we do not know the true probabilities $\\pi_A$ and $\\pi_B$. However, for this exercise, we set them manually to study how our estimator behaves when the truth is known.\n",
+        "\n",
+        "Suppose:\n",
+        "\n",
+        "- $\\pi_A = 0.22$\n",
+        "- $\\pi_B = 0.18$\n",
+        "\n",
+        "So the true difference is $\\theta = 0.04$.\n",
+        "\n",
+        "We simulate 1,000 visitors for each group."
+      ],
+      "id": "878421af"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import numpy as np\n",
+        "import matplotlib.pyplot as plt\n",
+        "import pandas as pd\n",
+        "import statsmodels.api as sm\n",
+        "from scipy.stats import norm\n",
+        "\n",
+        "np.random.seed(42)\n",
+        "\n",
+        "n = 1000\n",
+        "pi_A = 0.22\n",
+        "pi_B = 0.18\n",
+        "\n",
+        "A = np.random.binomial(1, pi_A, n)\n",
+        "B = np.random.binomial(1, pi_B, n)\n",
+        "\n",
+        "theta_hat = A.mean() - B.mean()\n",
+        "theta_hat"
+      ],
+      "id": "bf32fa89",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The estimated difference in conversion rates from this simulated experiment is shown above. Because the data are simulated, this estimate will vary slightly from run to run, but it should be reasonably close to the true value of 0.04.\n",
+        "\n",
+        "## The Law of Large Numbers\n",
+        "\n",
+        "The Law of Large Numbers states that as the sample size increases, the sample mean converges to the true population mean.\n",
+        "\n",
+        "In our case, this means that our estimator $\\hat\\theta$ should get closer to the true value $\\theta = 0.04$ as we include more observations."
+      ],
+      "id": "cd67edd5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "diff = A - B\n",
+        "running_mean = np.cumsum(diff) / np.arange(1, n + 1)\n",
+        "\n",
+        "plt.figure(figsize=(8, 5))\n",
+        "plt.plot(running_mean)\n",
+        "plt.axhline(0.04, linestyle='--')\n",
+        "plt.xlabel(\"Number of observations\")\n",
+        "plt.ylabel(\"Running estimate of θ\")\n",
+        "plt.title(\"Law of Large Numbers in Action\")\n",
+        "plt.show()"
+      ],
+      "id": "42c9f4b0",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "At the beginning, the estimate fluctuates substantially because the sample is still small. As more observations accumulate, the estimate stabilizes and moves closer to the true value of 0.04. This is exactly what the Law of Large Numbers predicts.\n",
+        "\n",
+        "## Bootstrap Standard Errors\n",
+        "\n",
+        "Point estimates are useful, but they do not tell us how much uncertainty is attached to the estimate. To measure this uncertainty, we can use the bootstrap.\n",
+        "\n",
+        "The bootstrap repeatedly resamples from the observed data and recalculates the statistic of interest. The spread of those bootstrap estimates gives us an estimate of the standard error."
+      ],
+      "id": "503f9163"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "boot_estimates = []\n",
+        "\n",
+        "for _ in range(1000):\n",
+        "    A_star = np.random.choice(A, size=n, replace=True)\n",
+        "    B_star = np.random.choice(B, size=n, replace=True)\n",
+        "    boot_estimates.append(A_star.mean() - B_star.mean())\n",
+        "\n",
+        "boot_se = np.std(boot_estimates)\n",
+        "boot_se"
+      ],
+      "id": "45927f6f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "For comparison, we can also compute the analytical standard error using the estimated Bernoulli variances."
+      ],
+      "id": "dcd032cb"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "piA_hat = A.mean()\n",
+        "piB_hat = B.mean()\n",
+        "\n",
+        "se_analytical = np.sqrt(\n",
+        "    piA_hat * (1 - piA_hat) / n +\n",
+        "    piB_hat * (1 - piB_hat) / n\n",
+        ")\n",
+        "\n",
+        "se_analytical"
+      ],
+      "id": "3cad851f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The bootstrap standard error is very close to the analytical standard error, which gives us confidence that the bootstrap is working well in this setting.\n",
+        "\n",
+        "Using the bootstrap standard error, we can construct a 95% confidence interval:\n",
+        "\n",
+        "$$\n",
+        "\\hat\\theta \\pm 1.96 \\times SE\n",
+        "$$"
+      ],
+      "id": "d4a69985"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "lower = theta_hat - 1.96 * boot_se\n",
+        "upper = theta_hat + 1.96 * boot_se\n",
+        "(lower, upper)"
+      ],
+      "id": "8746ab7f",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "This interval gives a range of plausible values for the true difference in conversion rates between the two CTAs.\n",
+        "\n",
+        "## The Central Limit Theorem\n",
+        "\n",
+        "The Central Limit Theorem states that as the sample size grows, the sampling distribution of the sample mean becomes approximately normal.\n",
+        "\n",
+        "To illustrate this, I repeatedly simulate the A/B test at several different sample sizes and plot the resulting sampling distributions of $\\hat\\theta$."
+      ],
+      "id": "5c26adee"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def simulate_theta(sample_size):\n",
+        "    results = []\n",
+        "    for _ in range(1000):\n",
+        "        A_sim = np.random.binomial(1, pi_A, sample_size)\n",
+        "        B_sim = np.random.binomial(1, pi_B, sample_size)\n",
+        "        results.append(A_sim.mean() - B_sim.mean())\n",
+        "    return results\n",
+        "\n",
+        "sizes = [25, 50, 100, 500]\n",
+        "\n",
+        "fig, axes = plt.subplots(2, 2, figsize=(10, 8))\n",
+        "\n",
+        "for ax, s in zip(axes.flatten(), sizes):\n",
+        "    vals = simulate_theta(s)\n",
+        "    ax.hist(vals, bins=30)\n",
+        "    ax.set_title(f\"n = {s}\")\n",
+        "    ax.set_xlabel(\"Estimated difference\")\n",
+        "    ax.set_ylabel(\"Frequency\")\n",
+        "\n",
+        "plt.tight_layout()\n",
+        "plt.show()"
+      ],
+      "id": "79d0b2fc",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "When the sample size is small, the sampling distribution is rough and less symmetric. As the sample size increases, the distribution becomes smoother and more bell-shaped. This illustrates the Central Limit Theorem in practice.\n",
+        "\n",
+        "## Hypothesis Testing\n",
+        "\n",
+        "We now test whether the two CTAs perform differently.\n",
+        "\n",
+        "The hypotheses are:\n",
+        "\n",
+        "- $H_0: \\theta = 0$\n",
+        "- $H_1: \\theta \\neq 0$\n",
+        "\n",
+        "We compute the test statistic\n",
+        "\n",
+        "$$\n",
+        "z = \\frac{\\hat\\theta}{SE}\n",
+        "$$\n",
+        "\n",
+        "using the analytical standard error."
+      ],
+      "id": "f5646e0c"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "z = theta_hat / se_analytical\n",
+        "z"
+      ],
+      "id": "60e200d8",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "p_value = 2 * (1 - norm.cdf(abs(z)))\n",
+        "p_value"
+      ],
+      "id": "2e38c7c2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "If the p-value is less than 0.05, we reject the null hypothesis and conclude that the two CTAs differ in performance.\n",
+        "\n",
+        "In this simulated example, the p-value is small enough to suggest evidence against the null hypothesis. That implies CTA A performs better than CTA B in this experiment.\n",
+        "\n",
+        "## The T-Test as a Regression\n",
+        "\n",
+        "A useful insight from statistics is that the difference-in-means test can also be written as a regression model:\n",
+        "\n",
+        "$$\n",
+        "Y_i = \\beta_0 + \\beta_1 D_i + \\varepsilon_i\n",
+        "$$\n",
+        "\n",
+        "where:\n",
+        "\n",
+        "- $Y_i$ is whether visitor $i$ signed up,\n",
+        "- $D_i = 1$ if the visitor saw CTA A,\n",
+        "- $D_i = 0$ if the visitor saw CTA B.\n",
+        "\n",
+        "In this setup, $\\beta_1$ captures the difference in average outcomes between the two groups."
+      ],
+      "id": "deff2bee"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "Y = np.concatenate([A, B])\n",
+        "D = np.concatenate([np.ones(n), np.zeros(n)])\n",
+        "\n",
+        "df = pd.DataFrame({\"Y\": Y, \"D\": D})\n",
+        "\n",
+        "X = sm.add_constant(df[\"D\"])\n",
+        "model = sm.OLS(df[\"Y\"], X).fit()\n",
+        "\n",
+        "model.params"
+      ],
+      "id": "6bc8a733",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "model.bse"
+      ],
+      "id": "5164c401",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "model.pvalues"
+      ],
+      "id": "38eea9a1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The regression coefficient on `D` is the same difference in means we calculated earlier. This shows that a simple A/B test can be analyzed as a regression problem, which is especially useful when researchers later want to add controls or extend the model.\n",
+        "\n",
+        "## The Problem with Peeking\n",
+        "\n",
+        "A common mistake in experimentation is peeking: repeatedly checking results during data collection and stopping the experiment as soon as significance appears.\n",
+        "\n",
+        "This practice is dangerous because it increases the probability of false positives.\n",
+        "\n",
+        "To show this, I simulate a setting where the null hypothesis is actually true:\n",
+        "\n",
+        "$$\n",
+        "\\pi_A = \\pi_B = 0.20\n",
+        "$$\n",
+        "\n",
+        "Then I check significance every 100 observations and record whether the experiment ever produces a p-value below 0.05."
+      ],
+      "id": "e756dcf2"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "def one_experiment():\n",
+        "    A_null = np.random.binomial(1, 0.20, 1000)\n",
+        "    B_null = np.random.binomial(1, 0.20, 1000)\n",
+        "\n",
+        "    for k in range(100, 1001, 100):\n",
+        "        A_k = A_null[:k]\n",
+        "        B_k = B_null[:k]\n",
+        "\n",
+        "        theta_k = A_k.mean() - B_k.mean()\n",
+        "        se_k = np.sqrt(\n",
+        "            A_k.mean() * (1 - A_k.mean()) / k +\n",
+        "            B_k.mean() * (1 - B_k.mean()) / k\n",
+        "        )\n",
+        "\n",
+        "        if se_k == 0:\n",
+        "            continue\n",
+        "\n",
+        "        z_k = theta_k / se_k\n",
+        "        p_k = 2 * (1 - norm.cdf(abs(z_k)))\n",
+        "\n",
+        "        if p_k < 0.05:\n",
+        "            return 1\n",
+        "    return 0\n",
+        "\n",
+        "results = [one_experiment() for _ in range(1000)]\n",
+        "np.mean(results)"
+      ],
+      "id": "8766a8bd",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The proportion shown above is the false positive rate under repeated peeking. It is typically well above 5%, even though the null hypothesis is true. This demonstrates why experiments should have pre-specified stopping rules rather than being monitored continuously without adjustment.\n",
+        "\n",
+        "## Conclusion\n",
+        "\n",
+        "This simulation-based A/B testing exercise illustrates several core ideas from classical frequentist statistics.\n",
+        "\n",
+        "First, the Law of Large Numbers shows that our estimator becomes more stable as sample size increases. Second, the bootstrap provides a practical way to estimate uncertainty. Third, the Central Limit Theorem explains why normal-based inference becomes reasonable in large samples. Fourth, hypothesis testing gives us a formal method for evaluating whether observed differences are likely due to chance. Finally, the peeking example highlights why good experimental design matters just as much as the statistical test itself.\n",
+        "\n",
+        "Overall, this example shows how simulation can make abstract statistical ideas much more concrete and intuitive."
+      ],
+      "id": "91bb833d"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\Oliver\\AppData\\Roaming\\Python\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}

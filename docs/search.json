@@ -7,6 +7,62 @@
     "text": "Download PDF file."
   },
   {
+    "objectID": "projects/project2/hw2_questions.html",
+    "href": "projects/project2/hw2_questions.html",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "",
+    "text": "In April 1992, New Jersey increased its minimum wage from $4.25 to $5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.\nThe authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural difference-in-differences (DID) research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.\nThe goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#introduction",
+    "href": "projects/project2/hw2_questions.html#introduction",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "",
+    "text": "In April 1992, New Jersey increased its minimum wage from $4.25 to $5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.\nThe authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural difference-in-differences (DID) research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.\nThe goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#main-analysis",
+    "href": "projects/project2/hw2_questions.html#main-analysis",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Main Analysis",
+    "text": "Main Analysis\n\nData Preparation\nFollowing the original paper, full-time equivalent employment (FTE) is defined as:\nFTE=Full-time workers+Managers+0.5×Part-time workers\nThis measure converts part-time workers into half of a full-time worker."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#replication-of-summary-statistics",
+    "href": "projects/project2/hw2_questions.html#replication-of-summary-statistics",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Replication of Summary Statistics",
+    "text": "Replication of Summary Statistics\n\n\n\n\n\n\n\n\n\nNJ Before\nPA Before\nNJ After\nPA After\nNJ Wage Before\nPA Wage Before\nNJ Wage After\nPA Wage After\n\n\n\n\n0\n20.439\n23.331\n20.896\n21.166\n4.612\n4.63\n5.081\n4.617\n\n\n\n\n\n\n\nThe summary statistics closely match the original paper. Average starting wages rose sharply in New Jersey after the policy change, while wages in Pennsylvania remained relatively stable."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#difference-in-differences-estimate",
+    "href": "projects/project2/hw2_questions.html#difference-in-differences-estimate",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Difference-in-Differences Estimate",
+    "text": "Difference-in-Differences Estimate\n\n\n\n\n\n\n\n\n\nGroup\nBefore\nAfter\nChange\n\n\n\n\n0\nNew Jersey\n20.439\n20.896\n0.457\n\n\n1\nPennsylvania\n23.331\n21.166\n-2.166\n\n\n\n\n\n\n\n\n\nDifference-in-Differences Estimate: 2.623\n\n\nEmployment in New Jersey increased slightly, while employment in Pennsylvania declined. The DID estimate is positive, indicating that employment growth in New Jersey exceeded that of Pennsylvania after the minimum wage increase.\nThis result is consistent with Card and Krueger’s main conclusion: there is no evidence that the minimum wage increase reduced employment."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#regression-replication-table-4-column-i",
+    "href": "projects/project2/hw2_questions.html#regression-replication-table-4-column-i",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Regression Replication (Table 4 Column i)",
+    "text": "Regression Replication (Table 4 Column i)\n\n\n\n\n\n\n\n\n\nCoefficient\nStd. Error\nP-value\nObservations\n\n\n\n\n0\n2.646\n1.161\n0.023\n386\n\n\n\n\n\n\n\nThe coefficient on the New Jersey indicator measures the relative employment change in New Jersey compared with Pennsylvania. The estimated coefficient is positive and statistically significant, closely matching the published paper."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#something-additional",
+    "href": "projects/project2/hw2_questions.html#something-additional",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Something Additional",
+    "text": "Something Additional\n\n\n\n\n\n\n\n\n\nThe figure provides a clear visual interpretation of the difference-in-differences method. Pennsylvania experienced a notable decline in employment, while New Jersey employment remained stable or increased slightly. The treatment effect is captured by the difference in these changes rather than the initial difference in employment levels."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#conclusion",
+    "href": "projects/project2/hw2_questions.html#conclusion",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis replication broadly confirms the main findings of Card and Krueger (1994). Using the publicly available dataset, I find no evidence that the 1992 New Jersey minimum wage increase reduced fast-food employment. Instead, employment growth in New Jersey exceeded that of the control group in Pennsylvania.\nThese findings remain important in modern labor economics because they demonstrate that the employment effects of minimum wages may differ from the simple competitive model.\nBecause the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets."
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Chengxu Liu",
@@ -109,6 +165,6 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 21, 2026\n\n\n\n\n\n\nNo matching items"
   }
 ]
