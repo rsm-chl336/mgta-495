@@ -172,4 +172,4 @@ This replication broadly confirms the main findings of Card and Krueger (1994). 
 
 These findings remain important in modern labor economics because they demonstrate that the employment effects of minimum wages may differ from the simple competitive model.
 
-Because the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets.
+Because the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets. However, the findings provide valuable insights into the potential effects of minimum wage policies on employment. These insights can inform future policy decisions and contribute to the broader understanding of labor market dynamics.
