@@ -7,81 +7,46 @@
     "text": "Download PDF file."
   },
   {
-    "objectID": "projects/project2/hw2_questions.html",
-    "href": "projects/project2/hw2_questions.html",
-    "title": "Replication of Card and Krueger (1994)",
+    "objectID": "projects/project3/hw3_completed.html",
+    "href": "projects/project3/hw3_completed.html",
+    "title": "Poisson Regression and Maximum Likelihood Estimation",
     "section": "",
-    "text": "In April 1992, New Jersey increased its minimum wage from $4.25 to $5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.\nThe authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural difference-in-differences (DID) research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.\nThe goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset."
+    "text": "Blueprinty is a small software company that makes tools for engineering firms that are preparing blueprint-based patent applications. The marketing team wants to make a strong claim: firms that use Blueprinty’s software are more successful at getting patents approved. Ideally, we would test this by observing the same firms before and after they started using Blueprinty, or by randomly assigning some firms to use the software and others not to use it. That ideal data does not exist here. Instead, Blueprinty collected data on 1,500 mature engineering firms, including each firm’s number of patents awarded over the last five years, regional location, age since incorporation, and whether the firm is currently a Blueprinty customer. This makes the question interesting, but also difficult. Blueprinty’s customers were not randomly selected, so a simple comparison between customers and non-customers could mix together the effect of the software with other differences between the firms, such as age or region. The goal of this post is to use Poisson regression and maximum likelihood estimation to make a more careful comparison."
   },
   {
-    "objectID": "projects/project2/hw2_questions.html#introduction",
-    "href": "projects/project2/hw2_questions.html#introduction",
-    "title": "Replication of Card and Krueger (1994)",
+    "objectID": "projects/project3/hw3_completed.html#introduction",
+    "href": "projects/project3/hw3_completed.html#introduction",
+    "title": "Poisson Regression and Maximum Likelihood Estimation",
     "section": "",
-    "text": "In April 1992, New Jersey increased its minimum wage from $4.25 to $5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.\nThe authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural difference-in-differences (DID) research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.\nThe goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset."
+    "text": "Blueprinty is a small software company that makes tools for engineering firms that are preparing blueprint-based patent applications. The marketing team wants to make a strong claim: firms that use Blueprinty’s software are more successful at getting patents approved. Ideally, we would test this by observing the same firms before and after they started using Blueprinty, or by randomly assigning some firms to use the software and others not to use it. That ideal data does not exist here. Instead, Blueprinty collected data on 1,500 mature engineering firms, including each firm’s number of patents awarded over the last five years, regional location, age since incorporation, and whether the firm is currently a Blueprinty customer. This makes the question interesting, but also difficult. Blueprinty’s customers were not randomly selected, so a simple comparison between customers and non-customers could mix together the effect of the software with other differences between the firms, such as age or region. The goal of this post is to use Poisson regression and maximum likelihood estimation to make a more careful comparison."
   },
   {
-    "objectID": "projects/project2/hw2_questions.html#main-analysis",
-    "href": "projects/project2/hw2_questions.html#main-analysis",
-    "title": "Replication of Card and Krueger (1994)",
-    "section": "Main Analysis",
-    "text": "Main Analysis\n\nData Preparation\nFollowing the original paper, full-time equivalent employment (FTE) is defined as:\nFTE=Full-time workers+Managers+0.5×Part-time workers\nThis measure converts part-time workers into half of a full-time worker."
+    "objectID": "projects/project3/hw3_completed.html#exploring-the-data",
+    "href": "projects/project3/hw3_completed.html#exploring-the-data",
+    "title": "Poisson Regression and Maximum Likelihood Estimation",
+    "section": "Exploring the Data",
+    "text": "Exploring the Data\nFirst, I load the data and create readable labels for the customer variable. The outcome variable is patents, which counts how many patents each firm received over the last five years.\n\nimport numpy as np\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom pathlib import Path\nfrom scipy.special import gammaln\nfrom scipy.optimize import minimize\nfrom statsmodels.tools.numdiff import approx_hess\nimport statsmodels.api as sm\nfrom IPython.display import display\n\nplt.rcParams[\"figure.figsize\"] = (8, 5)\nplt.rcParams[\"axes.spines.top\"] = False\nplt.rcParams[\"axes.spines.right\"] = False\n\npossible_paths = [\n    Path(\"blueprinty.csv\"),\n    Path(\"files/blueprinty.csv\"),\n    Path(\"../files/blueprinty.csv\"),\n    Path(\"../../files/blueprinty.csv\"),\n]\n\ndata_path = next((p for p in possible_paths if p.exists()), None)\nif data_path is None:\n    raise FileNotFoundError(\"Could not find blueprinty.csv. Put it in the website files folder or next to this qmd file.\")\n\nblueprinty = pd.read_csv(data_path)\nblueprinty[\"customer_status\"] = np.where(\n    blueprinty[\"iscustomer\"] == 1,\n    \"Blueprinty customer\",\n    \"Not a customer\"\n)\n\nblueprinty.head()\n\n\n\n\n\n\n\n\npatents\nregion\nage\niscustomer\ncustomer_status\n\n\n\n\n0\n0\nMidwest\n32.5\n0\nNot a customer\n\n\n1\n3\nSouthwest\n37.5\n0\nNot a customer\n\n\n2\n4\nNorthwest\n27.0\n1\nBlueprinty customer\n\n\n3\n3\nNortheast\n24.5\n0\nNot a customer\n\n\n4\n3\nSouthwest\n37.0\n0\nNot a customer\n\n\n\n\n\n\n\n\nPatent counts by customer status\n\n\n\n\n\n\n\nTable 1: Patent counts by Blueprinty customer status\n\n\n\n\n\n \ncustomer_status\nfirms\nmean_patents\nmedian_patents\nsd_patents\nmax_patents\n\n\n\n\n0\nBlueprinty customer\n481\n4.13\n4.0\n2.55\n16\n\n\n1\nNot a customer\n1019\n3.47\n3.0\n2.23\n16\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nBlueprinty customers have a higher average number of patents than non-customers. In this sample, non-customers average about 3.47 patents over the last five years, while customers average about 4.13 patents. The difference is visible in the histograms: customers are somewhat more concentrated in the higher patent-count range. By itself, though, this does not prove that the software caused the difference. Customers may also differ from non-customers in ways that matter for patenting.\n\n\nRegion by customer status\n\n\n\n\n\n\n\nTable 2: Regional distribution within each customer-status group\n\n\n\n\n\ncustomer_status\nregion\nBlueprinty customer\nNot a customer\n\n\n\n\n0\nMidwest\n7.7%\n18.4%\n\n\n1\nNortheast\n68.2%\n26.8%\n\n\n2\nNorthwest\n6.0%\n15.5%\n\n\n3\nSouth\n7.3%\n15.3%\n\n\n4\nSouthwest\n10.8%\n24.0%\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe regional mix is very different across the two groups. For example, Blueprinty customers are heavily concentrated in the Northeast, while non-customers are more spread out across regions. This matters because region could be related to patent output. Some regions may have older firms, different industry clusters, stronger legal support, or different innovation environments. A fairer model should compare customers and non-customers while accounting for region.\n\n\nFirm age by customer status\n\n\n\n\n\n\n\nTable 3: Firm age by Blueprinty customer status\n\n\n\n\n\n \ncustomer_status\nfirms\nmean_age\nmedian_age\nsd_age\nmin_age\nmax_age\n\n\n\n\n0\nBlueprinty customer\n481\n26.90\n26.5\n7.81\n10.0\n49.0\n\n\n1\nNot a customer\n1019\n26.10\n25.5\n6.95\n9.0\n47.5\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe customer and non-customer age distributions are broadly similar, but customers are slightly older on average. Age should still be controlled for because older firms may have more experience, more legal infrastructure, and more accumulated R&D capacity. The relationship may also be nonlinear: patent production could rise as firms mature, but eventually level off."
   },
   {
-    "objectID": "projects/project2/hw2_questions.html#replication-of-summary-statistics",
-    "href": "projects/project2/hw2_questions.html#replication-of-summary-statistics",
-    "title": "Replication of Card and Krueger (1994)",
-    "section": "Replication of Summary Statistics",
-    "text": "Replication of Summary Statistics\n\n\n\n\n\n\n\n\n\nNJ Before\nPA Before\nNJ After\nPA After\nNJ Wage Before\nPA Wage Before\nNJ Wage After\nPA Wage After\n\n\n\n\n0\n20.439\n23.331\n20.896\n21.166\n4.612\n4.63\n5.081\n4.617\n\n\n\n\n\n\n\nThe summary statistics closely match the original paper. Average starting wages rose sharply in New Jersey after the policy change, while wages in Pennsylvania remained relatively stable."
+    "objectID": "projects/project3/hw3_completed.html#a-simple-poisson-model-via-maximum-likelihood",
+    "href": "projects/project3/hw3_completed.html#a-simple-poisson-model-via-maximum-likelihood",
+    "title": "Poisson Regression and Maximum Likelihood Estimation",
+    "section": "A Simple Poisson Model via Maximum Likelihood",
+    "text": "A Simple Poisson Model via Maximum Likelihood\nThe outcome variable is a count, so a Normal model is not a natural first choice. Patent counts cannot be negative, and they only take integer values such as 0, 1, 2, and 3. A Poisson distribution is a better starting point for this type of outcome because it is designed for non-negative count data.\nFor one observation, the Poisson probability mass function is:\n\\[\nf(Y_i \\mid \\lambda) = \\frac{e^{-\\lambda}\\lambda^{Y_i}}{Y_i!}\n\\]\nAssuming the observations are independent and identically distributed, the joint likelihood for all firms is:\n\\[\nL(\\lambda \\mid Y_1, \\ldots, Y_n) = \\prod_{i=1}^{n} \\frac{e^{-\\lambda}\\lambda^{Y_i}}{Y_i!}\n\\]\nTaking logs turns the product into a sum:\n\\[\n\\ell(\\lambda) = \\sum_{i=1}^{n} \\left[-\\lambda + Y_i\\log(\\lambda) - \\log(Y_i!)\\right]\n\\]\nThe maximum likelihood estimate is the value of \\(\\lambda\\) that makes the observed patent counts most likely.\n\nY = blueprinty[\"patents\"].to_numpy()\n\ndef poisson_loglikelihood(lam, Y):\n    \"\"\"Log-likelihood for iid Poisson data with one common lambda.\"\"\"\n    if lam &lt;= 0:\n        return -np.inf\n    return np.sum(-lam + Y * np.log(lam) - gammaln(Y + 1))\n\n\nlambda_grid = np.linspace(0.1, 8, 300)\nloglik_values = [poisson_loglikelihood(lam, Y) for lam in lambda_grid]\n\nbest_lambda_grid = lambda_grid[np.argmax(loglik_values)]\nsample_mean = Y.mean()\n\nplt.figure(figsize=(8, 5))\nplt.plot(lambda_grid, loglik_values, linewidth=2)\nplt.axvline(sample_mean, linestyle=\"--\", linewidth=2, label=f\"Sample mean = {sample_mean:.3f}\")\nplt.axvline(best_lambda_grid, linestyle=\":\", linewidth=2, label=f\"Grid maximum = {best_lambda_grid:.3f}\")\nplt.title(\"Log-likelihood for the simple Poisson model\")\nplt.xlabel(\"lambda\")\nplt.ylabel(\"Log-likelihood\")\nplt.legend()\nplt.tight_layout()\nplt.show()\n\n\n\n\n\n\n\n\nThe curve reaches its highest point close to the sample mean of patent counts. Visually, this means the best single Poisson rate for the whole dataset is the average number of patents per firm.\nMathematically, we can see the same result by taking the derivative of the log-likelihood:\n\\[\n\\ell(\\lambda) = \\sum_{i=1}^{n} \\left[-\\lambda + Y_i\\log(\\lambda) - \\log(Y_i!)\\right]\n\\]\n\\[\n\\frac{\\partial \\ell(\\lambda)}{\\partial \\lambda}\n= \\sum_{i=1}^{n} \\left[-1 + \\frac{Y_i}{\\lambda}\\right]\n= -n + \\frac{\\sum_{i=1}^{n}Y_i}{\\lambda}\n\\]\nSetting this equal to zero gives:\n\\[\n-n + \\frac{\\sum_{i=1}^{n}Y_i}{\\lambda} = 0\n\\]\n\\[\n\\hat{\\lambda}_{MLE} = \\frac{1}{n}\\sum_{i=1}^{n}Y_i = \\bar{Y}\n\\]\nThis result makes intuitive sense: in a simple Poisson model with only one rate parameter, the best estimate of that rate is the observed average count.\n\n# Optimize over log(lambda), then transform back, so lambda is always positive.\nsimple_result = minimize(\n    fun=lambda theta: -poisson_loglikelihood(np.exp(theta[0]), Y),\n    x0=np.array([np.log(Y.mean())]),\n    method=\"BFGS\"\n)\n\nsimple_mle = np.exp(simple_result.x[0])\n\nsimple_mle_table = pd.DataFrame({\n    \"Quantity\": [\"Numerical MLE\", \"Sample mean\"],\n    \"Value\": [simple_mle, sample_mean]\n})\n\ndisplay(\n    simple_mle_table.style\n    .format({\"Value\": \"{:.6f}\"})\n    .set_caption(\"Simple Poisson MLE compared with the sample mean\")\n)\n\n\n\n\n\n\nTable 4: Simple Poisson MLE compared with the sample mean\n\n\n\n\n\n \nQuantity\nValue\n\n\n\n\n0\nNumerical MLE\n3.684667\n\n\n1\nSample mean\n3.684667\n\n\n\n\n\n\n\n\nThe numerical MLE and the sample mean are essentially identical. This is exactly what the derivative showed: when every firm is assumed to share the same patent rate, the maximum likelihood estimate of that common rate is the average number of patents in the data."
   },
   {
-    "objectID": "projects/project2/hw2_questions.html#difference-in-differences-estimate",
-    "href": "projects/project2/hw2_questions.html#difference-in-differences-estimate",
-    "title": "Replication of Card and Krueger (1994)",
-    "section": "Difference-in-Differences Estimate",
-    "text": "Difference-in-Differences Estimate\n\n\n\n\n\n\n\n\n\nGroup\nBefore\nAfter\nChange\n\n\n\n\n0\nNew Jersey\n20.439\n20.896\n0.457\n\n\n1\nPennsylvania\n23.331\n21.166\n-2.166\n\n\n\n\n\n\n\n\n\nDifference-in-Differences Estimate: 2.623\n\n\nEmployment in New Jersey increased slightly, while employment in Pennsylvania declined. The DID estimate is positive, indicating that employment growth in New Jersey exceeded that of Pennsylvania after the minimum wage increase.\nThis result is consistent with Card and Krueger’s main conclusion: there is no evidence that the minimum wage increase reduced employment."
+    "objectID": "projects/project3/hw3_completed.html#poisson-regression",
+    "href": "projects/project3/hw3_completed.html#poisson-regression",
+    "title": "Poisson Regression and Maximum Likelihood Estimation",
+    "section": "Poisson Regression",
+    "text": "Poisson Regression\nThe simple model assumes every firm has the same patent rate, which is too restrictive. A more useful model allows the expected patent count to vary by firm characteristics:\n\\[\nY_i \\sim \\text{Poisson}(\\lambda_i)\n\\]\n\\[\n\\lambda_i = \\exp(X_i'\\beta)\n\\]\nThe exponential function is important because \\(X_i'\\beta\\) can be any real number, but \\(\\lambda_i\\) must be positive. In this model, each firm’s expected patent count depends on its age, age squared, region, and Blueprinty customer status.\nI include age squared because the effect of firm age is unlikely to be perfectly linear. I include region indicators because regional differences could affect patent output. One region must be dropped as the reference category to avoid perfect collinearity with the intercept. Here, Northeast is the reference region.\n\nX = pd.DataFrame({\n    \"intercept\": 1.0,\n    \"age\": blueprinty[\"age\"],\n    \"age_sq\": blueprinty[\"age\"] ** 2,\n})\n\nfor region in sorted(blueprinty[\"region\"].unique()):\n    if region != \"Northeast\":\n        X[f\"region_{region}\"] = (blueprinty[\"region\"] == region).astype(int)\n\nX[\"iscustomer\"] = blueprinty[\"iscustomer\"]\n\nX_matrix = X.to_numpy(dtype=float)\nY = blueprinty[\"patents\"].to_numpy(dtype=float)\nterms = X.columns.tolist()\n\nX.head()\n\n\n\n\n\n\n\n\nintercept\nage\nage_sq\nregion_Midwest\nregion_Northwest\nregion_South\nregion_Southwest\niscustomer\n\n\n\n\n0\n1.0\n32.5\n1056.25\n1\n0\n0\n0\n0\n\n\n1\n1.0\n37.5\n1406.25\n0\n0\n0\n1\n0\n\n\n2\n1.0\n27.0\n729.00\n0\n1\n0\n0\n1\n\n\n3\n1.0\n24.5\n600.25\n0\n0\n0\n0\n0\n\n\n4\n1.0\n37.0\n1369.00\n0\n0\n0\n1\n0\n\n\n\n\n\n\n\n\ndef poisson_regression_loglikelihood(beta, Y, X):\n    \"\"\"Poisson regression log-likelihood with lambda_i = exp(X_i beta).\"\"\"\n    eta = X @ beta\n    lam = np.exp(np.clip(eta, -50, 50))\n    return np.sum(-lam + Y * eta - gammaln(Y + 1))\n\n\nmanual_result = minimize(\n    fun=lambda beta: -poisson_regression_loglikelihood(beta, Y, X_matrix),\n    x0=np.zeros(X_matrix.shape[1]),\n    method=\"BFGS\"\n)\n\nbeta_hat = manual_result.x\n\n# Compute a numerical Hessian of the log-likelihood at the MLE.\nhessian = approx_hess(\n    beta_hat,\n    lambda beta: poisson_regression_loglikelihood(beta, Y, X_matrix)\n)\n\nvcov = -np.linalg.inv(hessian)\nmanual_se = np.sqrt(np.diag(vcov))\n\nmanual_results = pd.DataFrame({\n    \"term\": terms,\n    \"coefficient\": beta_hat,\n    \"std_error\": manual_se,\n    \"incidence_rate_ratio\": np.exp(beta_hat)\n})\n\ndisplay(\n    manual_results.style\n    .format({\n        \"coefficient\": \"{:.4f}\",\n        \"std_error\": \"{:.4f}\",\n        \"incidence_rate_ratio\": \"{:.3f}\"\n    })\n    .set_caption(\"Manual Poisson regression MLE results\")\n)\n\n\n\n\n\n\nTable 5: Manual Poisson regression MLE results\n\n\n\n\n\n \nterm\ncoefficient\nstd_error\nincidence_rate_ratio\n\n\n\n\n0\nintercept\n-0.4803\n0.1831\n0.619\n\n\n1\nage\n0.1487\n0.0139\n1.160\n\n\n2\nage_sq\n-0.0030\n0.0003\n0.997\n\n\n3\nregion_Midwest\n-0.0293\n0.0436\n0.971\n\n\n4\nregion_Northwest\n-0.0467\n0.0466\n0.954\n\n\n5\nregion_South\n0.0274\n0.0451\n1.028\n\n\n6\nregion_Southwest\n0.0214\n0.0385\n1.022\n\n\n7\niscustomer\n0.2076\n0.0309\n1.231\n\n\n\n\n\n\n\n\nThe incidence rate ratio is exp(coefficient). Values above 1 mean the expected patent count is higher, holding the other variables fixed. Values below 1 mean the expected patent count is lower.\n\nChecking the manual MLE against statsmodels\n\nglm_model = sm.GLM(Y, X, family=sm.families.Poisson()).fit()\n\ncomparison = pd.DataFrame({\n    \"term\": terms,\n    \"manual_coef\": beta_hat,\n    \"glm_coef\": glm_model.params.to_numpy(),\n    \"manual_se\": manual_se,\n    \"glm_se\": glm_model.bse.to_numpy()\n})\n\ncomparison[\"coef_difference\"] = comparison[\"manual_coef\"] - comparison[\"glm_coef\"]\n\ncomparison_display = comparison.copy()\n\ndisplay(\n    comparison_display.style\n    .format({\n        \"manual_coef\": \"{:.5f}\",\n        \"glm_coef\": \"{:.5f}\",\n        \"manual_se\": \"{:.5f}\",\n        \"glm_se\": \"{:.5f}\",\n        \"coef_difference\": \"{:.6f}\"\n    })\n    .set_caption(\"Manual MLE compared with statsmodels GLM\")\n)\n\n\n\n\n\n\nTable 6: Manual MLE compared with statsmodels GLM\n\n\n\n\n\n \nterm\nmanual_coef\nglm_coef\nmanual_se\nglm_se\ncoef_difference\n\n\n\n\n0\nintercept\n-0.48029\n-0.47975\n0.18314\n0.18316\n-0.000544\n\n\n1\nage\n0.14866\n0.14862\n0.01387\n0.01387\n0.000044\n\n\n2\nage_sq\n-0.00297\n-0.00297\n0.00026\n0.00026\n-0.000001\n\n\n3\nregion_Midwest\n-0.02926\n-0.02917\n0.04363\n0.04363\n-0.000088\n\n\n4\nregion_Northwest\n-0.04672\n-0.04674\n0.04661\n0.04661\n0.000026\n\n\n5\nregion_South\n0.02743\n0.02739\n0.04510\n0.04510\n0.000041\n\n\n6\nregion_Southwest\n0.02138\n0.02141\n0.03848\n0.03848\n-0.000025\n\n\n7\niscustomer\n0.20762\n0.20759\n0.03090\n0.03090\n0.000030\n\n\n\n\n\n\n\n\nThe manual MLE and the statsmodels Poisson GLM estimates match very closely. The standard errors also match closely. Small differences can happen because the manual approach uses a numerical Hessian approximation, while the GLM function uses a standard fitting routine designed specifically for generalized linear models.\n\n\nInterpreting the coefficients\nThe customer coefficient is positive, which means Blueprinty customers have higher expected patent counts after controlling for age, age squared, and region. Its incidence rate ratio is about 1.23, so the model estimates that Blueprinty customers have about 23% higher expected patent counts than otherwise similar non-customers.\nThe age coefficient is positive and the age-squared coefficient is negative. This suggests that expected patent counts increase as firms get older, but the increase slows down for older firms. That pattern is sensible: young firms may patent less because they are still building capabilities, while mature firms may become more productive, but the advantage does not grow forever at the same rate.\nThe region coefficients are relatively small in this model. Since Northeast is the reference group, each regional coefficient compares that region to the Northeast, holding the other variables fixed. The main result of interest is that the Blueprinty customer coefficient remains positive even after adding these controls."
   },
   {
-    "objectID": "projects/project2/hw2_questions.html#regression-replication-table-4-column-i",
-    "href": "projects/project2/hw2_questions.html#regression-replication-table-4-column-i",
-    "title": "Replication of Card and Krueger (1994)",
-    "section": "Regression Replication (Table 4 Column i)",
-    "text": "Regression Replication (Table 4 Column i)\n\n\n\n\n\n\n\n\n\nCoefficient\nStd. Error\nP-value\nObservations\n\n\n\n\n0\n2.646\n1.161\n0.023\n386\n\n\n\n\n\n\n\nThe coefficient on the New Jersey indicator measures the relative employment change in New Jersey compared with Pennsylvania. The estimated coefficient is positive and statistically significant, closely matching the published paper."
-  },
-  {
-    "objectID": "projects/project2/hw2_questions.html#something-additional",
-    "href": "projects/project2/hw2_questions.html#something-additional",
-    "title": "Replication of Card and Krueger (1994)",
-    "section": "Something Additional",
-    "text": "Something Additional\n\n\n\n\n\n\n\n\n\nThe figure provides a clear visual interpretation of the difference-in-differences method. Pennsylvania experienced a notable decline in employment, while New Jersey employment remained stable or increased slightly. The treatment effect is captured by the difference in these changes rather than the initial difference in employment levels."
-  },
-  {
-    "objectID": "projects/project2/hw2_questions.html#conclusion",
-    "href": "projects/project2/hw2_questions.html#conclusion",
-    "title": "Replication of Card and Krueger (1994)",
-    "section": "Conclusion",
-    "text": "Conclusion\nThis replication broadly confirms the main findings of Card and Krueger (1994). Using the publicly available dataset, I find no evidence that the 1992 New Jersey minimum wage increase reduced fast-food employment. Instead, employment growth in New Jersey exceeded that of the control group in Pennsylvania.\nThese findings remain important in modern labor economics because they demonstrate that the employment effects of minimum wages may differ from the simple competitive model.\nBecause the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Chengxu Liu",
-    "section": "",
-    "text": "Welcome to my website!\nI am a student at UCSD majored in MSBA and interested in data science, technology, and building projects. This website is created using Quarto as part of my coursework."
-  },
-  {
-    "objectID": "hobbies.html",
-    "href": "hobbies.html",
-    "title": "Chengxu Liu's Website",
-    "section": "",
-    "text": "I enjoy staying active and exploring new places in my free time. Fitness is an important part of my routine because it helps me stay disciplined, energized, and focused. I also love traveling, especially when I have the chance to experience dramatic landscapes and memorable views.\nOne of my most recent trips was to Death Valley, which was an unforgettable experience. The scenery was vast, quiet, and unlike anywhere I had been before. This photo captures a moment from that trip and reminds me why I enjoy traveling so much.\n\n\n\nA recent photo from my trip to Death Valley."
-  },
-  {
-    "objectID": "hobbies.html#hobbies",
-    "href": "hobbies.html#hobbies",
-    "title": "Chengxu Liu's Website",
-    "section": "",
-    "text": "I enjoy staying active and exploring new places in my free time. Fitness is an important part of my routine because it helps me stay disciplined, energized, and focused. I also love traveling, especially when I have the chance to experience dramatic landscapes and memorable views.\nOne of my most recent trips was to Death Valley, which was an unforgettable experience. The scenery was vast, quiet, and unlike anywhere I had been before. This photo captures a moment from that trip and reminds me why I enjoy traveling so much.\n\n\n\nA recent photo from my trip to Death Valley."
+    "objectID": "projects/project3/hw3_completed.html#the-effect-of-blueprintys-software",
+    "href": "projects/project3/hw3_completed.html#the-effect-of-blueprintys-software",
+    "title": "Poisson Regression and Maximum Likelihood Estimation",
+    "section": "The Effect of Blueprinty’s Software",
+    "text": "The Effect of Blueprinty’s Software\nThe Poisson regression coefficients are multiplicative, not additive. So the customer coefficient does not directly say “Blueprinty adds this many patents.” To express the result in patent-count units, I create two counterfactual datasets:\n\nX0: every firm is treated as a non-customer.\nX1: every firm is treated as a Blueprinty customer.\n\nThe two datasets keep each firm’s age and region unchanged. The only thing that changes is customer status.\n\nX0 = X.copy()\nX1 = X.copy()\n\nX0[\"iscustomer\"] = 0\nX1[\"iscustomer\"] = 1\n\nyhat_0 = np.exp(X0.to_numpy(dtype=float) @ beta_hat)\nyhat_1 = np.exp(X1.to_numpy(dtype=float) @ beta_hat)\n\naverage_effect = np.mean(yhat_1 - yhat_0)\navg_noncustomer_prediction = np.mean(yhat_0)\navg_customer_prediction = np.mean(yhat_1)\n\ncounterfactual_results = pd.DataFrame({\n    \"Counterfactual scenario\": [\n        \"All firms treated as non-customers\",\n        \"All firms treated as Blueprinty customers\",\n        \"Average difference\"\n    ],\n    \"Average predicted patents\": [\n        avg_noncustomer_prediction,\n        avg_customer_prediction,\n        average_effect\n    ]\n})\n\ndisplay(\n    counterfactual_results.style\n    .format({\"Average predicted patents\": \"{:.3f}\"})\n    .set_caption(\"Estimated average effect of Blueprinty customer status\")\n)\n\n\n\n\n\n\nTable 7: Estimated average effect of Blueprinty customer status\n\n\n\n\n\n \nCounterfactual scenario\nAverage predicted patents\n\n\n\n\n0\nAll firms treated as non-customers\n3.436\n\n\n1\nAll firms treated as Blueprinty customers\n4.229\n\n\n2\nAverage difference\n0.793\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThe model estimates that if all firms were treated as non-customers, the average predicted patent count would be about 3.44 patents over five years. If all firms were treated as Blueprinty customers, the average predicted patent count would be about 4.23 patents. The difference is about 0.79 additional patents per firm over five years, holding age and region fixed at each firm’s observed values.\nThis result is consistent with Blueprinty’s marketing claim. In the data, Blueprinty customers have higher patent counts, and that positive relationship remains after controlling for age, age squared, and region. However, this is still an observational study. We cannot fully rule out unobserved differences between customers and non-customers. For example, firms that choose Blueprinty may already be more organized, better funded, or more serious about patenting. So the analysis provides evidence that Blueprinty customer status is associated with more patents, but it does not prove pure causality in the same way a randomized experiment would."
   },
   {
     "objectID": "projects/project1/hw1_questions.html",
@@ -161,10 +126,87 @@
     "text": "Conclusion\nThis simulation-based A/B testing exercise illustrates several core ideas from classical frequentist statistics.\nFirst, the Law of Large Numbers shows that our estimator becomes more stable as sample size increases. Second, the bootstrap provides a practical way to estimate uncertainty. Third, the Central Limit Theorem explains why normal-based inference becomes reasonable in large samples. Fourth, hypothesis testing gives us a formal method for evaluating whether observed differences are likely due to chance. Finally, the peeking example highlights why good experimental design matters just as much as the statistical test itself.\nOverall, this example shows how simulation can make abstract statistical ideas much more concrete and intuitive."
   },
   {
+    "objectID": "hobbies.html",
+    "href": "hobbies.html",
+    "title": "Chengxu Liu's Website",
+    "section": "",
+    "text": "I enjoy staying active and exploring new places in my free time. Fitness is an important part of my routine because it helps me stay disciplined, energized, and focused. I also love traveling, especially when I have the chance to experience dramatic landscapes and memorable views.\nOne of my most recent trips was to Death Valley, which was an unforgettable experience. The scenery was vast, quiet, and unlike anywhere I had been before. This photo captures a moment from that trip and reminds me why I enjoy traveling so much.\n\n\n\nA recent photo from my trip to Death Valley."
+  },
+  {
+    "objectID": "hobbies.html#hobbies",
+    "href": "hobbies.html#hobbies",
+    "title": "Chengxu Liu's Website",
+    "section": "",
+    "text": "I enjoy staying active and exploring new places in my free time. Fitness is an important part of my routine because it helps me stay disciplined, energized, and focused. I also love traveling, especially when I have the chance to experience dramatic landscapes and memorable views.\nOne of my most recent trips was to Death Valley, which was an unforgettable experience. The scenery was vast, quiet, and unlike anywhere I had been before. This photo captures a moment from that trip and reminds me why I enjoy traveling so much.\n\n\n\nA recent photo from my trip to Death Valley."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Chengxu Liu",
+    "section": "",
+    "text": "Welcome to my website!\nI am a student at UCSD majored in MSBA and interested in data science, technology, and building projects. This website is created using Quarto as part of my coursework."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html",
+    "href": "projects/project2/hw2_questions.html",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "",
+    "text": "In April 1992, New Jersey increased its minimum wage from $4.25 to $5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.\nThe authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural difference-in-differences (DID) research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.\nThe goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#introduction",
+    "href": "projects/project2/hw2_questions.html#introduction",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "",
+    "text": "In April 1992, New Jersey increased its minimum wage from $4.25 to $5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.\nThe authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural difference-in-differences (DID) research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.\nThe goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#main-analysis",
+    "href": "projects/project2/hw2_questions.html#main-analysis",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Main Analysis",
+    "text": "Main Analysis\n\nData Preparation\nFollowing the original paper, full-time equivalent employment (FTE) is defined as:\nFTE=Full-time workers+Managers+0.5×Part-time workers\nThis measure converts part-time workers into half of a full-time worker."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#replication-of-summary-statistics",
+    "href": "projects/project2/hw2_questions.html#replication-of-summary-statistics",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Replication of Summary Statistics",
+    "text": "Replication of Summary Statistics\n\n\n\n\n\n\n\n\n\nNJ Before\nPA Before\nNJ After\nPA After\nNJ Wage Before\nPA Wage Before\nNJ Wage After\nPA Wage After\n\n\n\n\n0\n20.439\n23.331\n20.896\n21.166\n4.612\n4.63\n5.081\n4.617\n\n\n\n\n\n\n\nThe summary statistics closely match the original paper. Average starting wages rose sharply in New Jersey after the policy change, while wages in Pennsylvania remained relatively stable."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#difference-in-differences-estimate",
+    "href": "projects/project2/hw2_questions.html#difference-in-differences-estimate",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Difference-in-Differences Estimate",
+    "text": "Difference-in-Differences Estimate\n\n\n\n\n\n\n\n\n\nGroup\nBefore\nAfter\nChange\n\n\n\n\n0\nNew Jersey\n20.439\n20.896\n0.457\n\n\n1\nPennsylvania\n23.331\n21.166\n-2.166\n\n\n\n\n\n\n\n\n\nDifference-in-Differences Estimate: 2.623\n\n\nEmployment in New Jersey increased slightly, while employment in Pennsylvania declined. The DID estimate is positive, indicating that employment growth in New Jersey exceeded that of Pennsylvania after the minimum wage increase.\nThis result is consistent with Card and Krueger’s main conclusion: there is no evidence that the minimum wage increase reduced employment."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#regression-replication-table-4-column-i",
+    "href": "projects/project2/hw2_questions.html#regression-replication-table-4-column-i",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Regression Replication (Table 4 Column i)",
+    "text": "Regression Replication (Table 4 Column i)\n\n\n\n\n\n\n\n\n\nCoefficient\nStd. Error\nP-value\nObservations\n\n\n\n\n0\n2.646\n1.161\n0.023\n386\n\n\n\n\n\n\n\nThe coefficient on the New Jersey indicator measures the relative employment change in New Jersey compared with Pennsylvania. The estimated coefficient is positive and statistically significant, closely matching the published paper."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#something-additional",
+    "href": "projects/project2/hw2_questions.html#something-additional",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Something Additional",
+    "text": "Something Additional\n\n\n\n\n\n\n\n\n\nThe figure provides a clear visual interpretation of the difference-in-differences method. Pennsylvania experienced a notable decline in employment, while New Jersey employment remained stable or increased slightly. The treatment effect is captured by the difference in these changes rather than the initial difference in employment levels."
+  },
+  {
+    "objectID": "projects/project2/hw2_questions.html#conclusion",
+    "href": "projects/project2/hw2_questions.html#conclusion",
+    "title": "Replication of Card and Krueger (1994)",
+    "section": "Conclusion",
+    "text": "Conclusion\nThis replication broadly confirms the main findings of Card and Krueger (1994). Using the publicly available dataset, I find no evidence that the 1992 New Jersey minimum wage increase reduced fast-food employment. Instead, employment growth in New Jersey exceeded that of the control group in Pennsylvania.\nThese findings remain important in modern labor economics because they demonstrate that the employment effects of minimum wages may differ from the simple competitive model.\nBecause the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets."
+  },
+  {
     "objectID": "projects.html",
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 21, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nPoisson Regression and Maximum Likelihood Estimation\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 16, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 16, 2026\n\n\n\n\n\n\nNo matching items"
   }
 ]
