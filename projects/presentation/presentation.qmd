@@ -1,0 +1,165 @@
+---
+title: "Visualizing Customer Segmentation with K-Means Clustering"
+subtitle: "A Marketing Analytics Approach to Grouping Similar Customers"
+author: "Chengxu Liu"
+date: "May 29, 2026"
+institute: "MGTA 495"
+format:
+  revealjs:
+    theme: simple
+    transition: fade
+    slide-number: true
+    chalkboard: false
+    preview-links: auto
+    css: styles.css
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+np.random.seed(495)
+
+# Create simple fake customer data
+n = 60
+
+# Three rough customer groups
+segment_1 = np.random.normal(loc=[2, 7], scale=[0.7, 0.8], size=(n, 2))   # high engagement
+segment_2 = np.random.normal(loc=[7, 6], scale=[0.8, 0.7], size=(n, 2))   # high spending
+segment_3 = np.random.normal(loc=[5, 2], scale=[0.8, 0.7], size=(n, 2))   # low engagement
+
+X = np.vstack([segment_1, segment_2, segment_3])
+
+# Manually store a few "steps" of k-means centers for visual presentation
+centers_step1 = np.array([[1.5, 1.5], [4.5, 8.5], [8.2, 3.0]])
+centers_step2 = np.array([[4.6, 2.8], [2.5, 6.8], [7.0, 5.4]])
+centers_final = np.array([[5.0, 2.0], [2.0, 7.0], [7.0, 6.0]])
+
+def assign_clusters(X, centers):
+    distances = np.sqrt(((X[:, None, :] - centers[None, :, :]) ** 2).sum(axis=2))
+    return distances.argmin(axis=1)
+
+labels_step1 = assign_clusters(X, centers_step1)
+labels_step2 = assign_clusters(X, centers_step2)
+labels_final = assign_clusters(X, centers_final)
+
+def clean_plot(title, labels=None, centers=None):
+    plt.figure(figsize=(7.2, 5.2))
+
+    if labels is None:
+        plt.scatter(X[:, 0], X[:, 1], s=55, alpha=0.75)
+    else:
+        plt.scatter(X[:, 0], X[:, 1], c=labels, s=55, alpha=0.75)
+
+    if centers is not None:
+        plt.scatter(
+            centers[:, 0],
+            centers[:, 1],
+            marker="X",
+            s=280,
+            edgecolor="black",
+            linewidth=1.2
+        )
+
+    plt.title(title, fontsize=18, pad=14)
+    plt.xlabel("Purchase Frequency", fontsize=13)
+    plt.ylabel("Average Spending", fontsize=13)
+    plt.xlim(0, 9)
+    plt.ylim(0, 9)
+    plt.grid(alpha=0.25)
+    plt.tight_layout()
+    plt.show()
+```
+
+## Not All Customers Are the Same
+
+::: columns
+::: {.column width="45%"}
+**Marketing problem:**
+
+A brand should not send the same message to every customer.
+
+Some customers buy often.
+Some spend more.
+Some need a discount to come back.
+:::
+
+::: {.column width="55%"}
+```{python}
+clean_plot("Customers before segmentation")
+```
+:::
+:::
+
+## What Clustering Does
+
+::: columns
+::: {.column width="45%"}
+**Clustering** groups customers who look similar.
+
+In this example, we use two features:
+
+- purchase frequency
+- average spending
+
+The goal is to find natural customer segments.
+:::
+
+::: {.column width="55%"}
+```{python}
+clean_plot("Customers grouped into segments", labels_final, centers_final)
+```
+:::
+:::
+
+## How K-Means Moves
+
+::: columns
+::: {.column width="33%"}
+**Step 1**
+
+Start with rough centers.
+
+```{python}
+clean_plot("Step 1: Random centers", labels_step1, centers_step1)
+```
+:::
+
+::: {.column width="33%"}
+**Step 2**
+
+Assign customers to the closest center.
+
+```{python}
+clean_plot("Step 2: Centers move", labels_step2, centers_step2)
+```
+:::
+
+::: {.column width="33%"}
+**Final**
+
+Repeat until the groups are stable.
+
+```{python}
+clean_plot("Final clusters", labels_final, centers_final)
+```
+:::
+:::
+
+## Why This Helps Marketers
+
+| Segment | What it means | Possible action |
+|---|---|---|
+| High spending | Valuable customers | Loyalty reward |
+| Frequent buyers | Already engaged | Cross-sell message |
+| Low engagement | Need a push | Discount or reminder |
+
+
+**Main idea:**
+Customer segmentation helps marketers send better messages to the right people.
+
+**K-means is not magic. It is just a visual way to find similar customers.**

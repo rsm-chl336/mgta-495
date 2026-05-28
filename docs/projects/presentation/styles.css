@@ -1,0 +1,34 @@
+
+/* Simple styling for revealjs slides */
+
+.reveal h1, .reveal h2 {
+  font-weight: 700;
+}
+
+.reveal p, .reveal li, .reveal table {
+  font-size: 0.85em;
+}
+
+.reveal table {
+  width: 100%;
+}
+
+.reveal th {
+  font-weight: 700;
+}
+
+.reveal td, .reveal th {
+  padding: 0.35em 0.5em;
+}
+
+.reveal .columns {
+  gap: 1.2em;
+}
+
+.reveal img {
+  border-radius: 12px;
+}
+
+.reveal code {
+  font-size: 0.75em;
+}

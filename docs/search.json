@@ -126,11 +126,32 @@
     "text": "Conclusion\nThis replication broadly confirms the main findings of Card and Krueger (1994). Using the publicly available dataset, I find no evidence that the 1992 New Jersey minimum wage increase reduced fast-food employment. Instead, employment growth in New Jersey exceeded that of the control group in Pennsylvania.\nThese findings remain important in modern labor economics because they demonstrate that the employment effects of minimum wages may differ from the simple competitive model.\nBecause the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets."
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Chengxu Liu",
-    "section": "",
-    "text": "Welcome to my website!\nI am a student at UCSD majored in MSBA and interested in data science, technology, and building projects. This website is created using Quarto as part of my coursework."
+    "objectID": "projects/presentation/presentation.html#not-all-customers-are-the-same",
+    "href": "projects/presentation/presentation.html#not-all-customers-are-the-same",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "Not All Customers Are the Same",
+    "text": "Not All Customers Are the Same\n\n\nMarketing problem:\nA brand should not send the same message to every customer.\nSome customers buy often. Some spend more. Some need a discount to come back."
+  },
+  {
+    "objectID": "projects/presentation/presentation.html#what-clustering-does",
+    "href": "projects/presentation/presentation.html#what-clustering-does",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "What Clustering Does",
+    "text": "What Clustering Does\n\n\nClustering groups customers who look similar.\nIn this example, we use two features:\n\npurchase frequency\naverage spending\n\nThe goal is to find natural customer segments."
+  },
+  {
+    "objectID": "projects/presentation/presentation.html#how-k-means-moves",
+    "href": "projects/presentation/presentation.html#how-k-means-moves",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "How K-Means Moves",
+    "text": "How K-Means Moves\n\n\nStep 1\nStart with rough centers.\n\n\n\n\n\n\n\n\n\n\nStep 2\nAssign customers to the closest center.\n\n\n\n\n\n\n\n\n\n\nFinal\nRepeat until the groups are stable."
+  },
+  {
+    "objectID": "projects/presentation/presentation.html#why-this-helps-marketers",
+    "href": "projects/presentation/presentation.html#why-this-helps-marketers",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "Why This Helps Marketers",
+    "text": "Why This Helps Marketers\n\n\n\nSegment\nWhat it means\nPossible action\n\n\n\n\nHigh spending\nValuable customers\nLoyalty reward\n\n\nFrequent buyers\nAlready engaged\nCross-sell message\n\n\nLow engagement\nNeed a push\nDiscount or reminder\n\n\n\nMain idea: Customer segmentation helps marketers send better messages to the right people.\nK-means is not magic. It is just a visual way to find similar customers."
   },
   {
     "objectID": "hobbies.html",
@@ -145,6 +166,13 @@
     "title": "Chengxu Liu's Website",
     "section": "",
     "text": "I enjoy staying active and exploring new places in my free time. Fitness is an important part of my routine because it helps me stay disciplined, energized, and focused. I also love traveling, especially when I have the chance to experience dramatic landscapes and memorable views.\nOne of my most recent trips was to Death Valley, which was an unforgettable experience. The scenery was vast, quiet, and unlike anywhere I had been before. This photo captures a moment from that trip and reminds me why I enjoy traveling so much.\n\n\n\nA recent photo from my trip to Death Valley."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Chengxu Liu",
+    "section": "",
+    "text": "Welcome to my website!\nI am a student at UCSD majored in MSBA and interested in data science, technology, and building projects. This website is created using Quarto as part of my coursework."
   },
   {
     "objectID": "projects/project1/hw1_questions.html",
@@ -270,6 +298,6 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nMaxDiff Analysis of MSBA Class Preferences\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 26, 2024\n\n\n\n\n\n\n\n\n\n\n\nPoisson Regression and Maximum Likelihood Estimation\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 25, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 25, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nMaxDiff Analysis of MSBA Class Preferences\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 26, 2024\n\n\n\n\n\n\n\n\n\n\n\nPoisson Regression and Maximum Likelihood Estimation\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 27, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 27, 2026\n\n\n\n\n\n\n\n\n\n\n\nVisualizing Customer Segmentation with K-Means Clustering\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 29, 2026\n\n\n\n\n\n\nNo matching items"
   }
 ]

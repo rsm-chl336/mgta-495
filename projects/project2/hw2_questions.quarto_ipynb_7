@@ -1,0 +1,263 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Replication of Card and Krueger (1994)\"\n",
+        "subtitle: \"Minimum Wages and Employment: A Case Study of the Fast-Food Industry in New Jersey and Pennsylvania\"\n",
+        "author: \"Chengxu Liu\"\n",
+        "date: today\n",
+        "format: html\n",
+        "execute:\n",
+        "  echo: false\n",
+        "  warning: false\n",
+        "  message: false\n",
+        "---\n",
+        "\n",
+        "## Introduction\n",
+        "\n",
+        "In April 1992, New Jersey increased its minimum wage from \\$4.25 to \\$5.05 per hour. Card and Krueger (1994) examined whether this policy reduced employment in the fast-food industry. Their study became one of the most influential empirical papers in labor economics because it challenged the traditional prediction that higher minimum wages necessarily reduce employment.\n",
+        "\n",
+        "The authors compared fast-food restaurants in New Jersey to similar restaurants in eastern Pennsylvania, where the minimum wage did not change. This creates a natural **difference-in-differences (DID)** research design, where Pennsylvania serves as the control group and New Jersey serves as the treated group.\n",
+        "\n",
+        "The goal of this replication is to reproduce the paper’s main employment result using the publicly available dataset.\n",
+        "\n",
+        "\n",
+        "## Main Analysis\n",
+        "\n",
+        "### Data Preparation"
+      ],
+      "id": "e40089a6"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import pandas as pd\n",
+        "import numpy as np\n",
+        "import statsmodels.formula.api as smf\n",
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "# Load data\n",
+        "path = \"C:/Users/Oliver/Desktop/MGTA_495/files/njmin/public.dat\"\n",
+        "df = pd.read_csv(path, sep=r\"\\s+\", header=None, engine=\"python\")\n",
+        "\n",
+        "# Assign column names\n",
+        "df.columns = [\n",
+        "    \"SHEET\", \"CHAIN\", \"CO_OWNED\", \"STATE\",\n",
+        "    \"SOUTHJ\", \"CENTRALJ\", \"NORTHJ\", \"PA1\", \"PA2\", \"SHORE\",\n",
+        "    \"NCALLS\", \"EMPFT\", \"EMPPT\", \"NMGRS\", \"WAGE_ST\", \"INCTIME\", \"FIRSTINC\",\n",
+        "    \"BONUS\", \"PCTAFF\", \"MEALS\", \"OPEN\", \"HRSOPEN\", \"PSODA\", \"PFRY\", \"PENTREE\",\n",
+        "    \"NREGS\", \"NREGS11\",\n",
+        "    \"TYPE2\", \"STATUS2\", \"DATE2\", \"NCALLS2\", \"EMPFT2\", \"EMPPT2\", \"NMGRS2\",\n",
+        "    \"WAGE_ST2\", \"INCTIME2\", \"FIRSTIN2\", \"SPECIAL2\", \"MEALS2\", \"OPEN2R\",\n",
+        "    \"HRSOPEN2\", \"PSODA2\", \"PFRY2\", \"PENTREE2\", \"NREGS2\", \"NREGS112\"\n",
+        "]\n",
+        "\n",
+        "# Convert missing values\n",
+        "df = df.replace(\".\", np.nan)\n",
+        "for col in df.columns:\n",
+        "    df[col] = pd.to_numeric(df[col], errors=\"coerce\")\n",
+        "\n",
+        "# Construct FTE employment\n",
+        "df[\"FTE\"] = df[\"EMPFT\"] + df[\"NMGRS\"] + 0.5 * df[\"EMPPT\"]\n",
+        "df[\"FTE2\"] = df[\"EMPFT2\"] + df[\"NMGRS2\"] + 0.5 * df[\"EMPPT2\"]\n",
+        "\n",
+        "# Closed stores treated as zero employment in second wave\n",
+        "df.loc[df[\"STATUS2\"].isin([3,4,5]), \"FTE2\"] = 0\n",
+        "\n",
+        "# Meal price\n",
+        "df[\"FULLMEAL\"] = df[\"PSODA\"] + df[\"PFRY\"] + df[\"PENTREE\"]\n",
+        "df[\"FULLMEAL2\"] = df[\"PSODA2\"] + df[\"PFRY2\"] + df[\"PENTREE2\"]"
+      ],
+      "id": "470fef09",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Following the original paper, full-time equivalent employment (FTE) is defined as:\n",
+        "\n",
+        "FTE=Full-time workers+Managers+0.5×Part-time workers\n",
+        "\n",
+        "This measure converts part-time workers into half of a full-time worker.\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Replication of Summary Statistics"
+      ],
+      "id": "034fc71a"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "summary_table = pd.DataFrame({\n",
+        "    \"NJ Before\": [df.loc[df.STATE==1, \"FTE\"].mean()],\n",
+        "    \"PA Before\": [df.loc[df.STATE==0, \"FTE\"].mean()],\n",
+        "    \"NJ After\": [df.loc[df.STATE==1, \"FTE2\"].mean()],\n",
+        "    \"PA After\": [df.loc[df.STATE==0, \"FTE2\"].mean()],\n",
+        "    \"NJ Wage Before\": [df.loc[df.STATE==1, \"WAGE_ST\"].mean()],\n",
+        "    \"PA Wage Before\": [df.loc[df.STATE==0, \"WAGE_ST\"].mean()],\n",
+        "    \"NJ Wage After\": [df.loc[df.STATE==1, \"WAGE_ST2\"].mean()],\n",
+        "    \"PA Wage After\": [df.loc[df.STATE==0, \"WAGE_ST2\"].mean()]\n",
+        "})\n",
+        "\n",
+        "summary_table.round(3)"
+      ],
+      "id": "4f9202e2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The summary statistics closely match the original paper. Average starting wages rose sharply in New Jersey after the policy change, while wages in Pennsylvania remained relatively stable.\n",
+        "\n",
+        "## Difference-in-Differences Estimate"
+      ],
+      "id": "a52ce090"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "nj_before = df.loc[df.STATE==1, \"FTE\"].mean()\n",
+        "nj_after  = df.loc[df.STATE==1, \"FTE2\"].mean()\n",
+        "\n",
+        "pa_before = df.loc[df.STATE==0, \"FTE\"].mean()\n",
+        "pa_after  = df.loc[df.STATE==0, \"FTE2\"].mean()\n",
+        "\n",
+        "did = (nj_after - nj_before) - (pa_after - pa_before)\n",
+        "\n",
+        "did_table = pd.DataFrame({\n",
+        "    \"Group\": [\"New Jersey\", \"Pennsylvania\"],\n",
+        "    \"Before\": [nj_before, pa_before],\n",
+        "    \"After\": [nj_after, pa_after],\n",
+        "    \"Change\": [nj_after - nj_before, pa_after - pa_before]\n",
+        "})\n",
+        "\n",
+        "did_table.round(3)"
+      ],
+      "id": "cb68c018",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "print(\"Difference-in-Differences Estimate:\", round(did,3))"
+      ],
+      "id": "52fe3efb",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Employment in New Jersey increased slightly, while employment in Pennsylvania declined. The DID estimate is positive, indicating that employment growth in New Jersey exceeded that of Pennsylvania after the minimum wage increase.\n",
+        "\n",
+        "This result is consistent with Card and Krueger’s main conclusion: there is no evidence that the minimum wage increase reduced employment.\n",
+        "\n",
+        "\n",
+        "## Regression Replication (Table 4 Column i)"
+      ],
+      "id": "f0275ccd"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "reg_df = df[[\"FTE\",\"FTE2\",\"STATE\"]].dropna().copy()\n",
+        "reg_df[\"dFTE\"] = reg_df[\"FTE2\"] - reg_df[\"FTE\"]\n",
+        "\n",
+        "model = smf.ols(\"dFTE ~ STATE\", data=reg_df).fit()\n",
+        "\n",
+        "results = pd.DataFrame({\n",
+        "    \"Coefficient\":[model.params[\"STATE\"]],\n",
+        "    \"Std. Error\":[model.bse[\"STATE\"]],\n",
+        "    \"P-value\":[model.pvalues[\"STATE\"]],\n",
+        "    \"Observations\":[int(model.nobs)]\n",
+        "})\n",
+        "\n",
+        "results.round(3)"
+      ],
+      "id": "900166cd",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The coefficient on the New Jersey indicator measures the relative employment change in New Jersey compared with Pennsylvania. The estimated coefficient is positive and statistically significant, closely matching the published paper.\n",
+        "\n",
+        "## Something Additional\n"
+      ],
+      "id": "bf00d0b1"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "import matplotlib.pyplot as plt\n",
+        "\n",
+        "plot_df = pd.DataFrame({\n",
+        "    \"state\":[\"PA\",\"PA\",\"NJ\",\"NJ\"],\n",
+        "    \"period\":[\"Before\",\"After\",\"Before\",\"After\"],\n",
+        "    \"fte\":[pa_before, pa_after, nj_before, nj_after]\n",
+        "})\n",
+        "\n",
+        "plt.figure(figsize=(8,5))\n",
+        "\n",
+        "for s in [\"PA\",\"NJ\"]:\n",
+        "    sub = plot_df[plot_df.state == s]\n",
+        "    plt.plot(sub.period, sub.fte, marker=\"o\", linewidth=2.5, label=s)\n",
+        "\n",
+        "plt.title(\"Average Employment Before and After the Minimum Wage Increase\")\n",
+        "plt.ylabel(\"Average FTE Employment\")\n",
+        "plt.grid(alpha=0.3)\n",
+        "plt.legend(frameon=False)\n",
+        "plt.tight_layout()\n",
+        "plt.show()"
+      ],
+      "id": "a038d42d",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The figure provides a clear visual interpretation of the difference-in-differences method. Pennsylvania experienced a notable decline in employment, while New Jersey employment remained stable or increased slightly. The treatment effect is captured by the difference in these changes rather than the initial difference in employment levels.\n",
+        "\n",
+        "\n",
+        "## Conclusion\n",
+        "\n",
+        "This replication broadly confirms the main findings of Card and Krueger (1994). Using the publicly available dataset, I find no evidence that the 1992 New Jersey minimum wage increase reduced fast-food employment. Instead, employment growth in New Jersey exceeded that of the control group in Pennsylvania.\n",
+        "\n",
+        "These findings remain important in modern labor economics because they demonstrate that the employment effects of minimum wages may differ from the simple competitive model.\n",
+        "\n",
+        "Because the analysis focuses on one industry and one regional policy change, the results may not generalize perfectly to all labor markets."
+      ],
+      "id": "8c0052e6"
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "C:\\Users\\Oliver\\AppData\\Roaming\\Python\\share\\jupyter\\kernels\\python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
