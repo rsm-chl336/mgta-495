@@ -299,5 +299,33 @@
     "title": "My Projects",
     "section": "",
     "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nMaxDiff Analysis of MSBA Class Preferences\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 26, 2024\n\n\n\n\n\n\n\n\n\n\n\nPoisson Regression and Maximum Likelihood Estimation\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 27, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 27, 2026\n\n\n\n\n\n\n\n\n\n\n\nVisualizing Customer Segmentation with K-Means Clustering\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 29, 2026\n\n\n\n\n\n\nNo matching items"
+  },
+  {
+    "objectID": "projects/presentation/liu_chengxu-kmeans_segmentation.html#not-all-customers-are-the-same",
+    "href": "projects/presentation/liu_chengxu-kmeans_segmentation.html#not-all-customers-are-the-same",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "Not All Customers Are the Same",
+    "text": "Not All Customers Are the Same\n\n\nMarketing problem:\nA brand should not send the same message to every customer.\nSome customers buy often. Some spend more. Some need a discount to come back."
+  },
+  {
+    "objectID": "projects/presentation/liu_chengxu-kmeans_segmentation.html#what-clustering-does",
+    "href": "projects/presentation/liu_chengxu-kmeans_segmentation.html#what-clustering-does",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "What Clustering Does",
+    "text": "What Clustering Does\n\n\nClustering groups customers who look similar.\nIn this example, we use two features:\n\npurchase frequency\naverage spending\n\nThe goal is to find natural customer segments."
+  },
+  {
+    "objectID": "projects/presentation/liu_chengxu-kmeans_segmentation.html#how-k-means-moves",
+    "href": "projects/presentation/liu_chengxu-kmeans_segmentation.html#how-k-means-moves",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "How K-Means Moves",
+    "text": "How K-Means Moves\n\n\nStep 1\nStart with rough centers.\n\n\n\n\n\n\n\n\n\n\nStep 2\nAssign customers to the closest center.\n\n\n\n\n\n\n\n\n\n\nFinal\nRepeat until the groups are stable."
+  },
+  {
+    "objectID": "projects/presentation/liu_chengxu-kmeans_segmentation.html#why-this-helps-marketers",
+    "href": "projects/presentation/liu_chengxu-kmeans_segmentation.html#why-this-helps-marketers",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "Why This Helps Marketers",
+    "text": "Why This Helps Marketers\n\n\n\nSegment\nWhat it means\nPossible action\n\n\n\n\nHigh spending\nValuable customers\nLoyalty reward\n\n\nFrequent buyers\nAlready engaged\nCross-sell message\n\n\nLow engagement\nNeed a push\nDiscount or reminder\n\n\n\nMain idea: Customer segmentation helps marketers send better messages to the right people.\nK-means is not magic. It is just a visual way to find similar customers."
   }
 ]
