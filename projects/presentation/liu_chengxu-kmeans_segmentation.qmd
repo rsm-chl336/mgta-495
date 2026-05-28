@@ -151,6 +151,70 @@ clean_plot("Final clusters", labels_final, centers_final)
 :::
 :::
 
+
+## Practical Problem 1: Too Many Variables
+
+::: columns
+::: {.column width="48%"}
+
+**Problem:**
+K-means depends on distance.
+
+With too many variables, distance becomes harder to trust.
+
+This is called the **curse of dimensionality**.
+
+:::
+
+::: {.column width="52%"}
+
+| Data size | What happens |
+|---|---|
+| 2 variables | Distance is easy to see |
+| 10+ variables | Many points may look similarly far apart |
+| Result | Clusters can become less meaningful |
+
+:::
+:::
+
+**Practical fixes:**
+
+- Select only useful variables
+- Standardize before clustering
+- Use PCA to reduce dimensions
+
+
+## Practical Problem 2: Binary Variables
+
+::: columns
+::: {.column width="48%"}
+
+**Can we use 0/1 variables?**
+
+Sometimes yes, but we need to be careful.
+
+Examples:
+
+- email subscriber
+- used coupon
+- app user
+
+:::
+
+::: {.column width="52%"}
+
+| Case | What to watch for |
+|---|---|
+| Balanced 0/1 | Usually more usable |
+| Very rare 1s | May add little value |
+| Many binary variables | K-means may not fit well |
+
+:::
+:::
+
+**Better option:**
+For mixed data, consider **k-prototypes** or a mixed-data distance measure.
+
 ## Why This Helps Marketers
 
 | Segment | What it means | Possible action |

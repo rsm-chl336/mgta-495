@@ -1039,7 +1039,7 @@ Chengxu Liu
 <p>A brand should not send the same message to every customer.</p>
 <p>Some customers buy often. Some spend more. Some need a discount to come back.</p>
 </div><div class="column" style="width:55%;">
-<div id="28359c64" class="cell" data-execution_count="2">
+<div id="5310a5f8" class="cell" data-execution_count="2">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1062,7 +1062,7 @@ Chengxu Liu
 </ul>
 <p>The goal is to find natural customer segments.</p>
 </div><div class="column" style="width:55%;">
-<div id="a5028bbe" class="cell" data-execution_count="3">
+<div id="1c234ab0" class="cell" data-execution_count="3">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1079,7 +1079,7 @@ Chengxu Liu
 <div class="column" style="width:33%;">
 <p><strong>Step 1</strong></p>
 <p>Start with rough centers.</p>
-<div id="543dadd8" class="cell" data-execution_count="4">
+<div id="1f53f6c6" class="cell" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1091,7 +1091,7 @@ Chengxu Liu
 </div><div class="column" style="width:33%;">
 <p><strong>Step 2</strong></p>
 <p>Assign customers to the closest center.</p>
-<div id="78c8ef40" class="cell" data-execution_count="5">
+<div id="4a48d4e9" class="cell" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1103,7 +1103,7 @@ Chengxu Liu
 </div><div class="column" style="width:33%;">
 <p><strong>Final</strong></p>
 <p>Repeat until the groups are stable.</p>
-<div id="a1b1be53" class="cell" data-execution_count="6">
+<div id="51c49c64" class="cell" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div>
 <figure>
@@ -1113,6 +1113,82 @@ Chengxu Liu
 </div>
 </div>
 </div></div>
+</section>
+<section id="practical-problem-1-too-many-variables" class="slide level2">
+<h2>Practical Problem 1: Too Many Variables</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<p><strong>Problem:</strong> K-means depends on distance.</p>
+<p>With too many variables, distance becomes harder to trust.</p>
+<p>This is called the <strong>curse of dimensionality</strong>.</p>
+</div><div class="column" style="width:52%;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Data size</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>2 variables</td>
+<td>Distance is easy to see</td>
+</tr>
+<tr class="even">
+<td>10+ variables</td>
+<td>Many points may look similarly far apart</td>
+</tr>
+<tr class="odd">
+<td>Result</td>
+<td>Clusters can become less meaningful</td>
+</tr>
+</tbody>
+</table>
+</div></div>
+<p><strong>Practical fixes:</strong></p>
+<ul>
+<li>Select only useful variables</li>
+<li>Standardize before clustering</li>
+<li>Use PCA to reduce dimensions</li>
+</ul>
+</section>
+<section id="practical-problem-2-binary-variables" class="slide level2">
+<h2>Practical Problem 2: Binary Variables</h2>
+<div class="columns">
+<div class="column" style="width:48%;">
+<p><strong>Can we use 0/1 variables?</strong></p>
+<p>Sometimes yes, but we need to be careful.</p>
+<p>Examples:</p>
+<ul>
+<li>email subscriber</li>
+<li>used coupon</li>
+<li>app user</li>
+</ul>
+</div><div class="column" style="width:52%;">
+<table class="caption-top">
+<thead>
+<tr class="header">
+<th>Case</th>
+<th>What to watch for</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Balanced 0/1</td>
+<td>Usually more usable</td>
+</tr>
+<tr class="even">
+<td>Very rare 1s</td>
+<td>May add little value</td>
+</tr>
+<tr class="odd">
+<td>Many binary variables</td>
+<td>K-means may not fit well</td>
+</tr>
+</tbody>
+</table>
+</div></div>
+<p><strong>Better option:</strong> For mixed data, consider <strong>k-prototypes</strong> or a mixed-data distance measure.</p>
 </section>
 <section id="why-this-helps-marketers" class="slide level2">
 <h2>Why This Helps Marketers</h2>

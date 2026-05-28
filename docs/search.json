@@ -298,7 +298,7 @@
     "href": "projects.html",
     "title": "My Projects",
     "section": "",
-    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nMaxDiff Analysis of MSBA Class Preferences\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 26, 2024\n\n\n\n\n\n\n\n\n\n\n\nPoisson Regression and Maximum Likelihood Estimation\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 27, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 27, 2026\n\n\n\n\n\n\n\n\n\n\n\nVisualizing Customer Segmentation with K-Means Clustering\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 29, 2026\n\n\n\n\n\n\nNo matching items"
+    "text": "A/B Testing a Call to Action\n\n\n\n\n\n\nChengxu Liu\n\n\nApr 13, 2026\n\n\n\n\n\n\n\n\n\n\n\nMaxDiff Analysis of MSBA Class Preferences\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 26, 2024\n\n\n\n\n\n\n\n\n\n\n\nPoisson Regression and Maximum Likelihood Estimation\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 28, 2026\n\n\n\n\n\n\n\n\n\n\n\nReplication of Card and Krueger (1994)\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 28, 2026\n\n\n\n\n\n\n\n\n\n\n\nVisualizing Customer Segmentation with K-Means Clustering\n\n\n\n\n\n\nChengxu Liu\n\n\nMay 29, 2026\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "projects/presentation/liu_chengxu-kmeans_segmentation.html#not-all-customers-are-the-same",
@@ -327,5 +327,19 @@
     "title": "Visualizing Customer Segmentation with K-Means Clustering",
     "section": "Why This Helps Marketers",
     "text": "Why This Helps Marketers\n\n\n\nSegment\nWhat it means\nPossible action\n\n\n\n\nHigh spending\nValuable customers\nLoyalty reward\n\n\nFrequent buyers\nAlready engaged\nCross-sell message\n\n\nLow engagement\nNeed a push\nDiscount or reminder\n\n\n\nMain idea: Customer segmentation helps marketers send better messages to the right people.\nK-means is not magic. It is just a visual way to find similar customers."
+  },
+  {
+    "objectID": "projects/presentation/liu_chengxu-kmeans_segmentation.html#practical-problem-1-too-many-variables",
+    "href": "projects/presentation/liu_chengxu-kmeans_segmentation.html#practical-problem-1-too-many-variables",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "Practical Problem 1: Too Many Variables",
+    "text": "Practical Problem 1: Too Many Variables\n\n\nProblem: K-means depends on distance.\nWith too many variables, distance becomes harder to trust.\nThis is called the curse of dimensionality.\n\n\n\n\nData size\nWhat happens\n\n\n\n\n2 variables\nDistance is easy to see\n\n\n10+ variables\nMany points may look similarly far apart\n\n\nResult\nClusters can become less meaningful\n\n\n\n\nPractical fixes:\n\nSelect only useful variables\nStandardize before clustering\nUse PCA to reduce dimensions"
+  },
+  {
+    "objectID": "projects/presentation/liu_chengxu-kmeans_segmentation.html#practical-problem-2-binary-variables",
+    "href": "projects/presentation/liu_chengxu-kmeans_segmentation.html#practical-problem-2-binary-variables",
+    "title": "Visualizing Customer Segmentation with K-Means Clustering",
+    "section": "Practical Problem 2: Binary Variables",
+    "text": "Practical Problem 2: Binary Variables\n\n\nCan we use 0/1 variables?\nSometimes yes, but we need to be careful.\nExamples:\n\nemail subscriber\nused coupon\napp user\n\n\n\n\n\nCase\nWhat to watch for\n\n\n\n\nBalanced 0/1\nUsually more usable\n\n\nVery rare 1s\nMay add little value\n\n\nMany binary variables\nK-means may not fit well\n\n\n\n\nBetter option: For mixed data, consider k-prototypes or a mixed-data distance measure."
   }
 ]
